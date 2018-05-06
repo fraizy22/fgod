@@ -204,8 +204,8 @@
 			<object type="image" sprite="ModernWindowCornerBottomRight" size="100%-315 346 100% 100%" z="20"/>
 
 			<!-- Category Tabs -->
-			<object name="settingTabButtonsBackground" type="image" sprite="ModernDarkBoxGold" size="100%-315 346 100%-33 556" z="21"/>
-			<object name="settingTabButtons" size="100%-315 346 100%-33 556" z="21">
+			<object name="settingTabButtonsBackground" type="image" sprite="ModernDarkBoxGold" size="100%-315 346 100%-25 556" z="21"/>
+			<object name="settingTabButtons" size="100%-315 346 100%-25 556" z="21">
 				<include file="gui/common/tab_buttons.xml"/>
 			</object>
 
@@ -220,18 +220,6 @@
 				z="100"
 			>
 				<translatableAttribute id="tooltip">Show the multiplayer lobby in a dialog window.</translatableAttribute>
-			</object>
-
-			<!-- View Options Button -->
-			<object name="optionsButton"
-				type="button"
-				sprite="ModernGear"
-				sprite_over="ModernGearHover"
-				size="100%-49 362+12 100%-25 362+12+24"
-				z="100"
-			>
-				<translatableAttribute id="tooltip">Show options window.</translatableAttribute>
-				<action on="Press">showOptions();</action>
 			</object>
 
 			<!-- Map Description -->

@@ -10,8 +10,6 @@ const g_StartingResources = prepareForDropdown(g_Settings && g_Settings.Starting
 const g_VictoryDurations = prepareForDropdown(g_Settings && g_Settings.VictoryDurations);
 const g_VictoryConditions = g_Settings && g_Settings.VictoryConditions;
 
-var g_PersistMatchSettingsLoaded = false;
-
 var g_GameSpeeds = getGameSpeedChoices(false);
 
 /**
@@ -1845,8 +1843,6 @@ function loadPersistMatchSettings()
 	if (!g_IsController || Engine.ConfigDB_GetValue("user", "persistmatchsettings") != "true" || g_IsTutorial)
 		return;
 
-	g_PersistMatchSettingsLoaded = true;
-warn("ok");
 	let settingsFile = g_IsNetworked ? g_MatchSettings_MP : g_MatchSettings_SP;
 	if (!Engine.FileExists(settingsFile))
 		return;
@@ -2754,17 +2750,4 @@ function storeCivInfoPage(data)
 {
 	g_CivInfo.code = data.civ;
 	g_CivInfo.page = data.page;
-}
-
-function showOptions()
-{
-	Engine.PushGuiPage("page_options.xml", {
-		"callback": "reloadPersistMatchSettings"
-	});
-}
-
-function reloadPersistMatchSettings()
-{
-	if (!g_PersistMatchSettingsLoaded && Engine.ConfigDB_GetValue("user", "persistmatchsettings") == "true")
-		loadPersistMatchSettings();
 }
