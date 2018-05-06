@@ -194,22 +194,17 @@ static void PumpEvents()
  * Optionally throttle the render frequency in order to
  * prevent 100% workload of the currently used CPU core.
  */
-inline static void LimitFPS(double pFpsLimit = -1.0)
+inline static void LimitFPS()
 {
-	double fpsLimit = pFpsLimit;
-	debug_printf("fpsLimitA %.2f\n", fpsLimit);
-	
-	if (pFpsLimit == -1.0)
-	{
-		if (g_VSync)
-			return;
-		CFG_GET_VAL(g_Game && g_Game->IsGameStarted() ? "adaptivefps.session" : "adaptivefps.menu", fpsLimit);
+	if (g_VSync)
+		return;
 
-		// Keep in sync with options.json
-		if (fpsLimit < 20.0) // || fpsLimit >= 181.0)
-			return;
-	}
-	debug_printf("fpsLimitB %.2f\n", fpsLimit);
+	double fpsLimit = 0.0;
+	CFG_GET_VAL(g_Game && g_Game->IsGameStarted() ? "adaptivefps.session" : "adaptivefps.menu", fpsLimit);
+
+	// Keep in sync with options.json
+	if (fpsLimit < 20.0 || fpsLimit >= 100.0)
+		return;
 
 	double wait = 1000.0 / fpsLimit -
 		std::chrono::duration_cast<std::chrono::microseconds>(
@@ -316,7 +311,7 @@ static void Frame()
 	// If we are not running a multiplayer game, disable updates when the game is
 	// minimized or out of focus and relinquish the CPU a bit, in order to make
 	// debugging easier.
-	if (g_PauseGameOnFocusLoss && !g_NetClient && !g_app_has_focus)
+	if (g_PauseOnFocusLoss && !g_NetClient && !g_app_has_focus)
 	{
 		PROFILE3("non-focus delay");
 		need_update = false;
@@ -378,10 +373,7 @@ static void Frame()
 
 	// We do not have to render an inactive fullscreen frame, because it can
 	// lead to errors for some graphic card families.
-	bool need_render = !g_app_minimized &&
-		(!g_PauseRendererOnFocusLoss || g_app_has_focus) && (g_app_has_focus || !g_VideoMode.IsInFullscreen());
-
-	if (need_render)
+	if (!g_app_minimized && (g_app_has_focus || !g_VideoMode.IsInFullscreen()))
 	{
 		Render();
 
@@ -393,11 +385,8 @@ static void Frame()
 	g_Profiler.Frame();
 
 	g_GameRestarted = false;
-	
-	if (need_render)
-		LimitFPS();
-	else
-		LimitFPS(20);
+
+	LimitFPS();
 }
 
 static void NonVisualFrame()

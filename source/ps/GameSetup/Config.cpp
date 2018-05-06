@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Wildfire Games.
+/* Copyright (C) 2017 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -35,8 +35,7 @@ bool g_NoGLS3TC = false;
 bool g_NoGLAutoMipmap = false;
 bool g_NoGLVBO = false;
 
-bool g_PauseGameOnFocusLoss = false;
-bool g_PauseRendererOnFocusLoss = false;
+bool g_PauseOnFocusLoss = false;
 
 bool g_RenderActors = true;
 
@@ -93,10 +92,7 @@ static void LoadGlobals()
 	CFG_GET_VAL("nos3tc", g_NoGLS3TC);
 	CFG_GET_VAL("noautomipmap", g_NoGLAutoMipmap);
 	CFG_GET_VAL("novbo", g_NoGLVBO);
-
-	CFG_GET_VAL("pausegameonfocusloss", g_PauseGameOnFocusLoss);
-	CFG_GET_VAL("pauserendereronfocusloss", g_PauseRendererOnFocusLoss);
-
+	CFG_GET_VAL("pauseonfocusloss", g_PauseOnFocusLoss);
 	CFG_GET_VAL("renderactors", g_RenderActors);
 	CFG_GET_VAL("shadows", g_Shadows);
 	CFG_GET_VAL("shadowpcf", g_ShadowPCF);

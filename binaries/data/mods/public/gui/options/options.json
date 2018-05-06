@@ -19,8 +19,7 @@
 				"type": "boolean",
 				"label": "Background Pause",
 				"tooltip": "Pause single player games when window loses focus.",
-				"config": "pausegameonfocusloss",
-				"function": "SetPauseGameOnFocusLossEnabled"
+				"config": "pauseonfocusloss"
 			},
 			{
 				"type": "boolean",
@@ -251,14 +250,7 @@
 				"tooltip": "To save CPU workload, throttle render frequency in running games. Set to maximum to disable throttling.",
 				"config": "adaptivefps.session",
 				"min": 20,
-				"max": 240
-			},
-			{
-				"type": "boolean",
-				"label": "Only Render When Focused",
-				"tooltip": "Pause rendering if the window is not focused.\nTip: This can be helpful when fast forwarding in replays.",
-				"config": "pauserendereronfocusloss",
-				"function": "SetPauseRendererOnFocusLossEnabled"
+				"max": 100
 			}
 		]
 	},

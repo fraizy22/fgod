@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Wildfire Games.
+/* Copyright (C) 2017 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -33,8 +33,6 @@ namespace JSI_Main
 	bool HotkeyIsPressed_(ScriptInterface::CxPrivate* pCxPrivate, const std::string& hotkeyName);
 	int GetFps(ScriptInterface::CxPrivate* pCxPrivate);
 	int GetTextWidth(ScriptInterface::CxPrivate* pCxPrivate, const std::string& fontName, const std::wstring& text);
-	void SetPauseGameOnFocusLossEnabled(ScriptInterface::CxPrivate* pCxPrivate, bool enabled);
-	void SetPauseRendererOnFocusLossEnabled(ScriptInterface::CxPrivate* pCxPrivate, bool enabled);
 
 	void RegisterScriptFunctions(const ScriptInterface& scriptInterface);
 }

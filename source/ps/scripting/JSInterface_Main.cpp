@@ -26,7 +26,6 @@
 #include "ps/CStrIntern.h"
 #include "ps/GUID.h"
 #include "ps/GameSetup/Atlas.h"
-#include "ps/GameSetup/Config.h"
 #include "ps/Globals.h"
 #include "ps/Hotkey.h"
 #include "scriptinterface/ScriptInterface.h"
@@ -109,16 +108,6 @@ int JSI_Main::GetTextWidth(ScriptInterface::CxPrivate* UNUSED(pCxPrivate), const
 	fontMetrics.CalculateStringSize(text.c_str(), width, height);
 	return width;
 }
- 
-void JSI_Main::SetPauseGameOnFocusLossEnabled(ScriptInterface::CxPrivate* UNUSED(pCxPrivate), bool enabled)
-{
-	g_PauseGameOnFocusLoss = enabled;
-}
-
-void JSI_Main::SetPauseRendererOnFocusLossEnabled(ScriptInterface::CxPrivate* UNUSED(pCxPrivate), bool enabled)
-{
-	g_PauseRendererOnFocusLoss = enabled;
-}
 
 void JSI_Main::RegisterScriptFunctions(const ScriptInterface& scriptInterface)
 {
@@ -133,6 +122,4 @@ void JSI_Main::RegisterScriptFunctions(const ScriptInterface& scriptInterface)
 	scriptInterface.RegisterFunction<bool, std::string, &HotkeyIsPressed_>("HotkeyIsPressed");
 	scriptInterface.RegisterFunction<int, &GetFps>("GetFPS");
 	scriptInterface.RegisterFunction<int, std::string, std::wstring, &GetTextWidth>("GetTextWidth");
-	scriptInterface.RegisterFunction<void, bool, &SetPauseGameOnFocusLossEnabled>("SetPauseGameOnFocusLossEnabled");
-	scriptInterface.RegisterFunction<void, bool, &SetPauseRendererOnFocusLossEnabled>("SetPauseRendererOnFocusLossEnabled");
 }

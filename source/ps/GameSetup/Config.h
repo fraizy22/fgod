@@ -1,4 +1,4 @@
-/* Copyright (C) 2018 Wildfire Games.
+/* Copyright (C) 2017 Wildfire Games.
  * This file is part of 0 A.D.
  *
  * 0 A.D. is free software: you can redistribute it and/or modify
@@ -42,10 +42,7 @@ extern bool g_NoGLVBO;
 //-----------------------------------------------------------------------------
 
 // flag to pause the game on window focus loss
-extern bool g_PauseGameOnFocusLoss;
-
-// flag to pause the renderer on window focus loss
-extern bool g_PauseRendererOnFocusLoss;
+extern bool g_PauseOnFocusLoss;
 
 // flag to switch on actor rendering
 extern bool g_RenderActors;
