@@ -1,0 +1,24 @@
+--- source/main.cpp
++++ source/main.cpp
+@@ -1,4 +1,4 @@
+-/* Copyright (C) 2017 Wildfire Games.
++/* Copyright (C) 2018 Wildfire Games.
+  * This file is part of 0 A.D.
+  *
+  * 0 A.D. is free software: you can redistribute it and/or modify
+@@ -305,13 +305,13 @@
+ 	ENSURE(realTimeSinceLastFrame > 0.0f);
+ 
+ 	// decide if update/render is necessary
+-	bool need_render = !g_app_minimized;
++	bool need_render = !g_app_minimized && (!g_PauseRendererOnFocusLoss || g_app_has_focus);
+ 	bool need_update = true;
+ 
+ 	// If we are not running a multiplayer game, disable updates when the game is
+ 	// minimized or out of focus and relinquish the CPU a bit, in order to make
+ 	// debugging easier.
+-	if (g_PauseOnFocusLoss && !g_NetClient && !g_app_has_focus)
++	if (g_PauseGameOnFocusLoss && !g_NetClient && !g_app_has_focus)
+ 	{
+ 		PROFILE3("non-focus delay");
+ 		need_update = false;

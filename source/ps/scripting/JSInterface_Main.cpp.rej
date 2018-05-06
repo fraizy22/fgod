@@ -1,0 +1,40 @@
+--- source/ps/scripting/JSInterface_Main.cpp
++++ source/ps/scripting/JSInterface_Main.cpp
+@@ -1,4 +1,4 @@
+-/* Copyright (C) 2017 Wildfire Games.
++/* Copyright (C) 2018 Wildfire Games.
+  * This file is part of 0 A.D.
+  *
+  * 0 A.D. is free software: you can redistribute it and/or modify
+@@ -26,6 +26,7 @@
+ #include "ps/CStrIntern.h"
+ #include "ps/GUID.h"
+ #include "ps/GameSetup/Atlas.h"
++#include "ps/GameSetup/Config.h"
+ #include "ps/Globals.h"
+ #include "ps/Hotkey.h"
+ #include "tools/atlas/GameInterface/GameLoop.h"
+@@ -108,6 +109,16 @@
+ 	return width;
+ }
+ 
++void JSI_Main::SetPauseGameOnFocusLossEnabled(ScriptInterface::CxPrivate* UNUSED(pCxPrivate), bool enabled)
++{
++	g_PauseGameOnFocusLoss = enabled;
++}
++
++void JSI_Main::SetPauseRendererOnFocusLossEnabled(ScriptInterface::CxPrivate* UNUSED(pCxPrivate), bool enabled)
++{
++	g_PauseRendererOnFocusLoss = enabled;
++}
++
+ void JSI_Main::RegisterScriptFunctions(const ScriptInterface& scriptInterface)
+ {
+ 	scriptInterface.RegisterFunction<void, &ExitProgram>("Exit");
+@@ -121,4 +132,6 @@
+ 	scriptInterface.RegisterFunction<bool, std::string, &HotkeyIsPressed_>("HotkeyIsPressed");
+ 	scriptInterface.RegisterFunction<int, &GetFps>("GetFPS");
+ 	scriptInterface.RegisterFunction<int, std::string, std::wstring, &GetTextWidth>("GetTextWidth");
++	scriptInterface.RegisterFunction<void, bool, &SetPauseGameOnFocusLossEnabled>("SetPauseGameOnFocusLossEnabled");
++	scriptInterface.RegisterFunction<void, bool, &SetPauseRendererOnFocusLossEnabled>("SetPauseRendererOnFocusLossEnabled");
+ }

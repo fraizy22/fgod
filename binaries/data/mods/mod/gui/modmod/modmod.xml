@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<objects>
+
+	<script directory="gui/common/"/>
+	<script directory="gui/modmod/"/>
+
+	<object type="image" style="ModernWindow" size="0 0 100% 100%">
+
+		<!-- Page Title -->
+		<object style="ModernLabelText" type="text" size="50%-128 4 50%+128 36">
+			<translatableAttribute id="caption">Modifications</translatableAttribute>
+		</object>
+
+		<!-- Filter Panel -->
+		<object size="0 40 312 64">
+			<object name="modGenericFilter"
+				type="input"
+				style="ModernInput"
+				size="16 0 176 100%"
+			>
+				<action on="Press">applyFilters();</action>
+				<action on="TextEdit">applyFilters();</action>
+			</object>
+
+			<!-- Checkboxes -->
+			<object name="negateFilter"
+				type="checkbox"
+				checked="false"
+				style="ModernTickBox"
+				size="186 0 206 100%"
+				font="serif-bold-13"
+			>
+				<action on="Press">applyFilters();</action>
+			</object>
+			<object type="text" size="208 0 100% 100%" text_align="left" textcolor="white">
+				<translatableAttribute id="caption">Negate</translatableAttribute>
+			</object>
+		</object>
+
+		<object
+			name="globalModDescription"
+			type="text"
+			size="312 32 100%-16 69"
+			textcolor="180 180 180"
+			text_align="left"
+			text_valign="center"
+		>
+			<translatableAttribute id="caption">Description</translatableAttribute>
+		</object>
+
+		<!-- Available Mods Wrapper -->
+		<object size="16 66 100%-15 62%" style="ModmodScrollbar">
+
+			<object style="ModernLabelText" type="text" size="0 5 100% 25">
+				<translatableAttribute id="caption">Available Mods</translatableAttribute>
+			</object>
+
+			<object name="modsDisabledList"
+				type="olist"
+				style="ModernSortedList"
+				sortable="true"
+				selected_column="name"
+				selected_column_order="1"
+				size="0 25 100%-2 100%"
+				font="sans-stroke-13"
+				auto_scroll="true"
+			>
+				<action on="SelectionChange">selectedMod(this.name);</action>
+				<action on="SelectionColumnChange">applyFilters();</action>
+				<action on="MouseLeftDoubleClickItem">enableMod();</action>
+
+				<!-- List headers -->
+				<!-- Keep the column names in sync with the property names of mods -->
+				<column id="name" color="255 255 255" width="10%">
+					<translatableAttribute id="heading">Name</translatableAttribute>
+				</column>
+				<column id="version" color="255 255 255" width="7%">
+					<translatableAttribute id="heading">Version</translatableAttribute>
+				</column>
+				<column id="folder" color="255 255 255" width="13%">
+					<translatableAttribute id="heading">(Folder)</translatableAttribute>
+				</column>
+				<column id="label" color="255 255 255" width="26%">
+					<translatableAttribute id="heading">Mod Label</translatableAttribute>
+				</column>
+				<column id="dependencies" color="255 255 255" width="20%">
+					<translatableAttribute id="heading">Dependencies</translatableAttribute>
+				</column>
+				<column id="url" color="255 255 255" width="24%">
+					<translatableAttribute id="heading">Website</translatableAttribute>
+				</column>
+			</object>
+		</object>
+
+		<!-- Enabled Mods Wrapper -->
+		<object size="16 62% 100%-15 100%-84">
+
+			<object style="ModernLabelText" type="text" size="0 5 100% 25">
+				<translatableAttribute id="caption">Enabled Mods</translatableAttribute>
+			</object>
+
+			<object name="modsEnabledList"
+				style="ModernList"
+				type="olist"
+				size="0 25 100%-32-2-2 100%"
+				font="sans-stroke-13"
+				tooltip_style="pgToolTip"
+				auto_scroll="true"
+			>
+				<action on="SelectionChange">selectedMod(this.name);</action>
+				<action on="MouseLeftDoubleClickItem">disableMod();</action>
+
+				<!-- List headers -->
+				<column id="name" color="255 255 255" width="10%">
+					<translatableAttribute id="heading">Name</translatableAttribute>
+				</column>
+				<column id="version" color="255 255 255" width="7%">
+					<translatableAttribute id="heading">Version</translatableAttribute>
+				</column>
+				<column id="folder" color="255 255 255" width="13%">
+					<translatableAttribute id="heading">(Folder)</translatableAttribute>
+				</column>
+				<column id="label" color="255 255 255" width="26%">
+					<translatableAttribute id="heading">Mod Label</translatableAttribute>
+				</column>
+				<column id="dependencies" color="255 255 255" width="20%">
+					<translatableAttribute id="heading">Dependencies</translatableAttribute>
+				</column>
+				<column id="url" color="255 255 255" width="24%">
+					<translatableAttribute id="heading">Website</translatableAttribute>
+				</column>
+			</object>
+
+			<object
+				name="enabledModUp"
+				type="button"
+				style="ModernButtonRed"
+				size="100%-32-2 23+4 100%-2 23+32+4"
+				enabled="false"
+				sprite="ModernArrowUpRed"
+				sprite_pressed="ModernArrowUpRed"
+				sprite_over="ModernArrowUpRedBright"
+				sprite_disabled="ModernArrowUpGrey"
+			>
+				<translatableAttribute id="tooltip">Change the order in which mods are launched. This should match the mods dependencies.</translatableAttribute>
+				<action on="Press">moveCurrItem("modsEnabledList", true);</action>
+			</object>
+			<object
+				name="enabledModDown"
+				type="button"
+				style="ModernButtonRed"
+				size="100%-32-2 100%-32-4 100%-2 100%-4"
+				enabled="false"
+				sprite="ModernArrowDownRed"
+				sprite_pressed="ModernArrowDownRed"
+				sprite_over="ModernArrowDownRedBright"
+				sprite_disabled="ModernArrowDownGrey"
+			>
+				<translatableAttribute id="tooltip">Change the order in which mods are launched. This should match the mods dependencies.</translatableAttribute>
+				<action on="Press">moveCurrItem("modsEnabledList", false);</action>
+			</object>
+		</object>
+
+		<!-- MOD-SPECIFIC BUTTONS -->
+		<object name="toggleModButton" type="button" style="ModernButtonRed" size="16 100%-80 236 100%-52" enabled="false">
+			<translatableAttribute id="caption">Enable/Disable</translatableAttribute>
+		</object>
+		<object name="visitWebButton" type="button" style="ModernButtonRed" size="240 100%-80 460 100%-52" enabled="false">
+			<translatableAttribute id="caption">Visit Website</translatableAttribute>
+			<action on="Press">visitModWebsite();</action>
+		</object>
+
+		<!-- Message -->
+		<object name="message" type="text" size="466 100%-78 100%-15 100%-52" text_align="left" textcolor="white"/>
+
+		<!-- BUTTONS -->
+		<object name="quitButton" type="button" style="ModernButtonRed" size="100%-994 100%-44 100%-804 100%-16">
+			<translatableAttribute id="caption">Quit</translatableAttribute>
+			<action on="Press">Engine.Exit();</action>
+		</object>
+
+		<object name="cancelButton" type="button" style="ModernButtonRed" size="100%-994 100%-44 100%-804 100%-16" hotkey="cancel">
+			<translatableAttribute id="caption">Cancel</translatableAttribute>
+			<action on="Press">closePage();</action>
+		</object>
+
+		<object type="button" style="ModernButtonRed" size="100%-800 100%-44 100%-610 100%-16">
+			<translatableAttribute id="caption">Help</translatableAttribute>
+			<action on="Press">Engine.PushGuiPage("page_modhelp.xml");</action>
+		</object>
+
+		<object type="button" style="ModernButtonRed" size="100%-606 100%-44 100%-412 100%-16">
+			<translatableAttribute id="caption">Download Mods</translatableAttribute>
+			<action on="Press">modIo();</action>
+		</object>
+
+		<object name="saveConfigurationButton" type="button" style="ModernButtonRed" size="100%-408 100%-44 100%-214 100%-16">
+			<translatableAttribute id="caption">Save Configuration</translatableAttribute>
+			<action on="Press">saveMods();</action>
+		</object>
+
+		<object name="startModsButton" type="button" style="ModernButtonRed" size="100%-210 100%-44 100%-16 100%-16">
+			<translatableAttribute id="caption">Start Mods</translatableAttribute>
+			<action on="Press">startMods();</action>
+		</object>
+	</object>
+</objects>

@@ -1,0 +1,108 @@
+html
+{
+	font-family: arial;
+}
+body
+{
+	padding: 25px;
+	padding-top: 0px;
+	margin:0px;
+}
+h1
+{
+	font-size: 48px;
+	text-align: center;
+}
+h2
+{
+	margin-left: -25px;
+	padding-left: 60px;
+	padding-bottom: 3px;
+	border-bottom: 2px #F88 solid;
+	width: 500px;
+	font-size: 30px;
+	font-style: italic;
+}
+
+.CivRosterVariety
+{
+	margin-top: 10px;
+	border-collapse: collapse;
+}
+
+.CivRosterVariety th
+{
+	font-weight: normal;
+	width:100px;
+	height:50px;
+	margin-left: 50px;
+	font-size: 14px;
+}
+
+.CivRosterVariety tr
+{
+	border-bottom: 1px white solid;
+}
+
+.CivRosterVariety td
+{
+	width: 20px;
+	height:20px;
+	border-right: 1px solid white;
+}
+.CivRosterVariety .vertical-text {
+	-webkit-transform: rotate(-45deg);
+ 	-moz-transform: rotate(-45deg);
+  	-ms-transform: rotate(-45deg);
+  	-o-transform: rotate(-45deg);
+  	transform: rotate(-45deg);
+  	max-width: 20px;
+  	height: 25px;
+  	padding-right:0px;
+  	font-size: 20px;
+}
+
+table .Sub
+{
+	padding: 4px;
+	font-size: 13px;
+	text-align: left;
+}
+
+table tr
+{
+	border-bottom: 1px #F3F3F3 solid;
+}
+
+table td
+{
+	text-align: center;
+	font-weight: normal;
+	min-width: 25px;
+	padding: 3px 6px 3px 6px;
+}
+
+table th
+{
+	border-bottom: 1px #CCC solid;
+	font-size: 15px;
+	padding:4px;
+	margin: 2px;
+	text-align: center;
+	font-weight: normal;
+	min-width: 25px;
+	border-left:1px black solid;
+}
+
+table .Label td, table .Label th
+{
+	border-bottom: 1px #000 solid;
+}
+
+table
+{
+	border: 2px black solid;
+	font-size: 12px;
+	border-collapse: collapse;
+	text-align: center;
+}

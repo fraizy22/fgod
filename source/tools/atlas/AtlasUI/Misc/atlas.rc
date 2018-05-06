@@ -1,0 +1,7 @@
+ICON_ActorEditor        ICON                    "Graphics\\ActorEditor.ico"
+ICON_ArchiveViewer      ICON                    "Graphics\\ArchiveViewer.ico"
+ICON_FileConverter      ICON                    "Graphics\\FileConverter.ico"
+ICON_ScenarioEditor     ICON                    "Graphics\\ScenarioEditor.ico"
+
+#define wxUSE_NO_MANIFEST 1
+#include "wx/msw/wx.rc"

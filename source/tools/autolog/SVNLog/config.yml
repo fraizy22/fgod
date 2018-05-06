@@ -1,0 +1,11 @@
+name: SVNLog
+svn:
+  username: philip
+  password: ????????
+  url     : http://svn.wildfiregames.com/svn/ps/trunk
+cdbi:
+  dsn     : dbi:SQLite:/var/svn/autolog/SVNLog/sql/svnlog.db
+output:
+  filename: /var/svn/htdocs/log.html
+  filename_feed: /var/svn/htdocs/log.atom
+  feed_url: http://svn.wildfiregames.com/log.atom

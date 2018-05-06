@@ -1,0 +1,12 @@
+--- binaries/data/mods/public/gui/options/options.json
++++ binaries/data/mods/public/gui/options/options.json
+@@ -25,7 +25,8 @@
+ 				"type": "boolean",
+ 				"label": "Background Pause",
+ 				"tooltip": "Pause single player games when window loses focus",
+-				"config": "pauseonfocusloss"
++				"config": "pausegameonfocusloss",
++				"function": "SetPauseGameOnFocusLossEnabled"
+ 			},
+ 			{
+ 				"type": "boolean",

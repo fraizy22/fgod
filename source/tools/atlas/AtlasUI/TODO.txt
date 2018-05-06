@@ -1,0 +1,93 @@
+wxWidgets:
+* alt+f with notebook tab focussed
+* wxLogTrace "%s" wxGetMessage (msw/window.cpp)
+
+==============================
+
+Colour tester:
+
+==============================
+
+Actor editor:
+
+* Fix new actor fields
+
+
+==============================
+
+General and/or unsorted miscellany:
+
+* Regression testing
+
+* Open actors from prop-actor selection
+
+* Make import undo work with multi-control windows, and update the title bar
+
+===
+
+* Better input controls (=> export nicely, support undo, etc)
+
+* Help (tooltips, etc)
+
+* More efficient Datafile::ReadList (don't read from disk every time)
+
+* Version number
+
+* Better colouring in test_dude.xml, where some variants have no data
+
+* Tab to move between fields
+
+===
+
+* Test/fix when running with large fonts, or weird XP styles
+
+* Better copy and paste (e.g. between multiple instances of the program,
+  and paste XML into other text-editing programs
+
+* Save on exit: don't ask if no changes
+
+* Browse for meshes/actors/etc, in a more nice/correct/unbuggy way
+
+* Window size memory
+
+* Column width memory
+
+* Allow reset memory
+
+* Input validation?
+
+* Browse for meshes/actors/etc, with mods
+
+* Customised AtObj->string conversion
+
+* Undo in text-editing boxes
+
+* AtlasObjectXML error handling
+
+* Use standard wxWidgets 2.5.4 release
+
+* Fix Escape in combo boxes inside dialogs
+
+* Make wxFileHistory work when not at the very end of a menu
+
+===
+
+* Document lots
+
+* wxListItemAttr* OnGetItemAttr(long item) >>>const<<< - wx documentation wrong?
+
+* Better column widths / window sizes
+
+* Don't create a row when editing a blank one then removing focus without typing anything
+
+======
+
+Done: (newest at top)
+
+* Display DDS info (compression, size)
+* Copy and paste
+* 'Create entity' button (take name, parent)
+* Correct undo menu entry when selecting 'New' (so it's not 'Import')
+* MRU file list
+* 'New' menu item
+* Import/export filter, for validation(?) and for handling attributes
