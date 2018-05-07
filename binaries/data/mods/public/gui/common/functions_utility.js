@@ -17,6 +17,16 @@ function saveSettingAndWriteToUserConfig(setting, value)
 }
 
 /**
+ * Used to track previous texts from autocompletion to try next autocompletion if multiples apply.
+ */
+var g_LastAutoComplete = {
+	"bufferPosition": 0,
+	"text": "",
+	"tries": 0,
+	"newText": ""
+};
+
+/**
  * Returns translated history and gameplay data of all civs, optionally including a mock gaia civ.
  */
 function loadCivData(selectableOnly, gaia)
@@ -124,7 +134,7 @@ function multiplayerName()
 	return Engine.ConfigDB_GetValue("user", "playername.multiplayer") || Engine.GetSystemUsername();
 }
 
-function tryAutoComplete(text, autoCompleteList)
+function tryAutoComplete(text, autoCompleteList, tries)
 {
 	if (!text.length)
 		return text;
@@ -137,19 +147,35 @@ function tryAutoComplete(text, autoCompleteList)
 	if (!lastWord.length)
 		return text;
 
+	let firstFound = "";
 	for (var word of autoCompleteList)
 	{
 		if (word.toLowerCase().indexOf(lastWord.toLowerCase()) != 0)
 			continue;
 
-		text = wordSplit.join(" ");
-		if (text.length > 0)
-			text += " ";
+		--tries;
+		if (!firstFound)
+			firstFound = word;
 
-		text += word;
-		break;
+		if (tries < 0)
+			break;
 	}
-	return text;
+
+	if (!firstFound)
+		return text;
+
+	// Wrap search to start, cause tries could not complete to 0, means there are no more matches as tries in list.
+	if (tries >= 0)
+	{
+		g_LastAutoComplete.tries = 1;
+		word = firstFound;
+	}
+
+	text = wordSplit.join(" ");
+	if (text.length > 0)
+		text += " ";
+
+	return text + word;
 }
 
 function autoCompleteNick(guiObject, playernames)
@@ -159,11 +185,23 @@ function autoCompleteNick(guiObject, playernames)
 		return;
 
 	let bufferPosition = guiObject.buffer_position;
-	let textTillBufferPosition = text.substring(0, bufferPosition);
-	let newText = tryAutoComplete(textTillBufferPosition, playernames);
+	let sameTry = g_LastAutoComplete.newText == text;
+	if (!sameTry)
+	{
+		g_LastAutoComplete.bufferPosition = bufferPosition;
+		g_LastAutoComplete.text = text;
+		g_LastAutoComplete.newText = "";
+		g_LastAutoComplete.tries = 0;
+	}
 
-	guiObject.caption = newText + text.substring(bufferPosition);
-	guiObject.buffer_position = bufferPosition + (newText.length - textTillBufferPosition.length);
+	let textTillBufferPosition = sameTry ? g_LastAutoComplete.text.substring(0, g_LastAutoComplete.bufferPosition) : text.substring(0, bufferPosition);
+	let newText = tryAutoComplete(textTillBufferPosition, playernames, g_LastAutoComplete.tries++);
+
+	guiObject.caption = newText + (sameTry ? g_LastAutoComplete.text.substring(g_LastAutoComplete.bufferPosition) : text.substring(bufferPosition));
+	if (g_LastAutoComplete.newText == "" || sameTry)
+		g_LastAutoComplete.newText = guiObject.caption;
+	guiObject.buffer_position = (sameTry ? g_LastAutoComplete.bufferPosition : bufferPosition) + (newText.length - textTillBufferPosition.length);
+	return;
 }
 
 function clearChatMessages()
