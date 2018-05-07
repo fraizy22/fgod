@@ -991,7 +991,7 @@ function updateGUIObjects()
 	}
 
 	updateViewedPlayerDropdown();
-	updateDiplomacy();
+	updateDiplomacy(false);
 }
 
 function onReplayFinished()
