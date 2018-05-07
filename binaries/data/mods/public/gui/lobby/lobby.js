@@ -1390,7 +1390,7 @@ function addChatMessage(msg)
 		// Highlight local user's nick
 		if (g_Username != msg.from)
 		{
-			msg.text = msg.text.replace(g_Username, colorPlayerName(g_Username));
+			msg.text = colorizeNameInText(msg.text, g_Username, getPlayerColor(g_Username));
 
 			if (!msg.historic && msg.text.toLowerCase().indexOf(g_Username.toLowerCase()) != -1)
 				soundNotification("nick");
