@@ -801,6 +801,7 @@ function selectGameFromPlayername()
 
 	let gameList = Engine.GetGUIObjectByName("gamesBox");
 	let foundAsObserver = false;
+	let selected = -1;
 
 	for (let i = 0; i < g_GameList.length; ++i)
 		for (let player of stringifiedTeamListToPlayerData(g_GameList[i].players))
@@ -812,16 +813,17 @@ function selectGameFromPlayername()
 			if (player.Team == "observer")
 			{
 				foundAsObserver = true;
-				gameList.selected = i;
+				selected = i;
 			}
 			else if (!player.Offline)
 			{
-				gameList.selected = i;
-				return;
+				selected = i;
+				break;
 			}
 			else if (!foundAsObserver)
-				gameList.selected = i;
+				selected = i;
 		}
+	gameList.selected = selected;
 }
 
 function onPlayerListSelection()
