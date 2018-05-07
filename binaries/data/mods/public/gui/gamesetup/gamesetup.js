@@ -2743,6 +2743,8 @@ function updateAutocompleteEntries()
 			autocomplete[priority] = (autocomplete[priority] || []).concat(dropdown[name].labels());
 		}
 
+	autocomplete["120"] = Object.keys(g_NetworkCommands).sort();
+
 	g_Autocomplete = Object.keys(autocomplete).sort().reverse().reduce((all, priority) => all.concat(autocomplete[priority]), []);
 }
 

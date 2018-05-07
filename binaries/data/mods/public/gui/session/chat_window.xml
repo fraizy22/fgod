@@ -72,7 +72,7 @@
 				let playernames = [];
 				for (let player in g_PlayerAssignments)
 					playernames.push(g_PlayerAssignments[player].name);
-				autoCompleteNick(this, playernames);
+				autoCompleteNick(this, playernames.concat(Object.keys(g_NetworkCommands).sort()));
 			</action>
 		</object>
 
