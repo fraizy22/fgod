@@ -42,6 +42,8 @@ When you are ready to start, click the "Start game" button.
 [font="sans-bold-16"]Hotkeys:
 [font="sans-bold-14"]Program-wide
 [font="sans-14"]Alt + F4: Close the game, without confirmation
+Shift + ESC: Close the current page and ask for confirmation when exiting the game.
+ESC: Close or cancel the current dialog box/popup.
 Alt + Enter: Toggle between fullscreen and windowed
 ~ or F9: Show/hide console
 Alt + F: Show/hide frame counter (FPS)

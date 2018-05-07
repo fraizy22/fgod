@@ -166,7 +166,7 @@
 			</action>
 		</object>
 
-		<object name="leaveButton" type="button" style="ModernButtonRed" size="0 100%-25 100% 100%">
+		<object name="leaveButton" type="button" style="ModernButtonRed" size="0 100%-25 100% 100%" hotkey="close">
 			<action on="Press">leaveLobby();</action>
 		</object>
 	</object>

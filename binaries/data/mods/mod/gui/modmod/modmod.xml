@@ -180,7 +180,7 @@
 			<action on="Press">Engine.Exit();</action>
 		</object>
 
-		<object name="cancelButton" type="button" style="ModernButtonRed" size="100%-994 100%-44 100%-804 100%-16" hotkey="cancel">
+		<object name="cancelButton" type="button" style="ModernButtonRed" size="100%-994 100%-44 100%-804 100%-16" hotkey="close">
 			<translatableAttribute id="caption">Cancel</translatableAttribute>
 			<action on="Press">closePage();</action>
 		</object>

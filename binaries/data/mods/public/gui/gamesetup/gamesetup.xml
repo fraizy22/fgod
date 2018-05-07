@@ -283,6 +283,7 @@
 				size="100%-308 100%-52 100%-168 100%-24"
 				tooltip_style="onscreenToolTip"
 				z="21"
+				hotkey="close"
 			>
 				<translatableAttribute id="caption">Back</translatableAttribute>
 				<action on="Press">cancelSetup();</action>
