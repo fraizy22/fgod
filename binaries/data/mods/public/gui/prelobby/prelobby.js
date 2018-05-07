@@ -5,13 +5,17 @@ var g_TermsOfServiceRead = false;
 var g_TermsOfUseRead = false;
 var g_DisplayingSystemMessage = false;
 
-function init()
+function init(initData)
 {
 	Engine.GetGUIObjectByName("rememberPassword").checked =
 		Engine.ConfigDB_GetValue("user", "lobby.rememberpassword") == "true";
 	g_EncryptedPassword = Engine.ConfigDB_GetValue("user", "lobby.password");
 	if (Engine.ConfigDB_GetValue("user", "lobby.login") && g_EncryptedPassword)
+	{
 		switchPage("connect");
+		if (initData && initData.connect)
+			lobbyStartConnect();
+	}
 }
 
 function lobbyStop()

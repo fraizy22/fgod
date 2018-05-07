@@ -47,6 +47,9 @@ function init(initData, hotloadData)
 	Engine.GetGUIObjectByName("lobbyButton").tooltip = colorizeHotkey(
 		translate("%(hotkey)s: Launch the multiplayer lobby to join and host publicly visible games and chat with other players."),
 		"lobby");
+
+	if (initData && initData.isStartup && Engine.ConfigDB_GetValue("user", "gui.startintolobby") === "true")
+		Engine.PushGuiPage("page_prelobby.xml", { "connect" : true });
 }
 
 function getHotloadData()
