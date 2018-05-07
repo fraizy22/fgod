@@ -688,7 +688,7 @@ function updateTopPanel()
 			break;
 		}
 		Engine.GetGUIObjectByName("resource[" + r + "]_icon").sprite = "stretched:session/icons/resources/" + res + ".png";
-		Engine.GetGUIObjectByName("resource[" + r + "]").hidden = !isPlayer;
+		Engine.GetGUIObjectByName("resource[" + r + "]").hidden = g_ViewedPlayer == 0;
 		++r;
 	}
 	horizontallySpaceObjects("resourceCounts", 5);
@@ -699,13 +699,16 @@ function updateTopPanel()
 	resPopSize.left = Engine.GetGUIObjectByName("resource[" + (r - 1) + "]").size.right;
 	resPop.size = resPopSize;
 
-	Engine.GetGUIObjectByName("population").hidden = !isPlayer;
+	// Engine.GetGUIObjectByName("population").hidden = !isPlayer;
+	Engine.GetGUIObjectByName("population").hidden = g_ViewedPlayer == 0;
 	Engine.GetGUIObjectByName("diplomacyButton").hidden = !isPlayer;
 	Engine.GetGUIObjectByName("tradeButton").hidden = !isPlayer;
-	Engine.GetGUIObjectByName("observerText").hidden = isPlayer;
+	// Engine.GetGUIObjectByName("observerText").hidden = isPlayer;
+	Engine.GetGUIObjectByName("observerText").hidden = g_ViewedPlayer != 0;
 
 	let alphaLabel = Engine.GetGUIObjectByName("alphaLabel");
-	alphaLabel.hidden = isPlayer && !viewPlayer.hidden;
+	// alphaLabel.hidden = isPlayer && !viewPlayer.hidden;
+	alphaLabel.hidden = g_ViewedPlayer != 0 && !viewPlayer.hidden;
 	alphaLabel.size = isPlayer ? "50%+44 0 100%-283 100%" : "155 0 85%-279 100%";
 
 	Engine.GetGUIObjectByName("pauseButton").enabled = !g_IsObserver || !g_IsNetworked || g_IsController;
@@ -1243,19 +1246,20 @@ function getAllyStatTooltip(resource, playerStates, sort)
 function updatePlayerDisplay()
 {
 	let allPlayerStates = GetSimState().players;
-	let viewedPlayerState = allPlayerStates[g_ViewedPlayer];
+	let viewedPlayerStates = g_ViewedPlayer > 0 ? [allPlayerStates[g_ViewedPlayer]] :
+		g_ViewedPlayer == -1 ? allPlayerStates.filter((stat, playerId) => playerId != 0) : [];
+
+	if (!viewedPlayerStates.length)
+		return;
+
 	let viewablePlayerStates = {};
 	for (let player in allPlayerStates)
 		if (player != 0 &&
-			player != g_ViewedPlayer &&
 			g_Players[player].state != "defeated" &&
 			(g_IsObserver ||
-				viewedPlayerState.hasSharedLos &&
+				viewedPlayerStates[0].hasSharedLos &&
 				g_Players[player].isMutualAlly[g_ViewedPlayer]))
 			viewablePlayerStates[player] = allPlayerStates[player];
-
-	if (!viewedPlayerState)
-		return;
 
 	let tooltipSort = +Engine.ConfigDB_GetValue("user", "gui.session.respoptooltipsort");
 
@@ -1285,16 +1289,29 @@ function updatePlayerDisplay()
 
 		resourceObj.tooltip = tooltip;
 
-		Engine.GetGUIObjectByName("resource[" + r + "]_count").caption = Math.floor(viewedPlayerState.resourceCounts[res]);
+		Engine.GetGUIObjectByName("resource[" + r + "]_count").caption = Math.floor(
+			viewedPlayerStates.map(playerState => playerState.resourceCounts[res]).reduce((total, resourceCount) => total + resourceCount, 0)
+		);
 	}
 
-	Engine.GetGUIObjectByName("resourcePop").caption = sprintf(translate("%(popCount)s/%(popLimit)s"), viewedPlayerState);
+	Engine.GetGUIObjectByName("resourcePop").caption = sprintf(translate(
+		"%(popCount)s/%(popLimit)s"),
+		viewedPlayerStates.reduce(
+			(sprintfData, playerState) => {
+				sprintfData.popCount += playerState.popCount;
+				sprintfData.popLimit += playerState.popLimit;
+				return sprintfData;
+			},
+			{ "popCount": 0, "popLimit": 0 }
+	));
 	Engine.GetGUIObjectByName("population").tooltip = translate("Population (current / limit)") + "\n" +
-		sprintf(translate("Maximum population: %(popCap)s"), { "popCap": viewedPlayerState.popMax }) +
+		sprintf(translate("Maximum population: %(popCap)s"), {
+			"popCap": viewedPlayerStates.map(playerState => playerState.popMax).reduce((totalPopMax, popMax) => totalPopMax + popMax, 0)
+		}) +
 		orderHotkeyTooltip +
 		getAllyStatTooltip("pop", viewablePlayerStates, tooltipSort);
 
-	g_IsTrainingBlocked = viewedPlayerState.trainingBlocked;
+	g_IsTrainingBlocked = g_ViewedPlayer > 0 && viewedPlayerStates[0].trainingBlocked;
 }
 
 function selectAndMoveTo(ent)
