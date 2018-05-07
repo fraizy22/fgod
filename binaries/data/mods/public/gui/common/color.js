@@ -189,3 +189,16 @@ function compatibilityColor(text, isCompatible)
 {
 	return isCompatible ? text : coloredText(text, "96 96 96");
 }
+
+/*
+ * Official function to escape characters for regular expressions
+ * https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions
+ */
+function escapeRegExp(string) {
+	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+function colorizeNameInText(text, name, color)
+{
+	return text.replace(new RegExp('(^|\\W)(' + escapeRegExp(name) + ')\(?=\\W|$\)', "g"), "\$1" + coloredText("\$2", color));
+}

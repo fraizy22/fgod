@@ -1135,6 +1135,13 @@ function formatChatCommand(msg)
 		if (userName != g_PlayerAssignments[msg.guid].name &&
 		    msg.text.toLowerCase().indexOf(splitRatingFromNick(userName).nick.toLowerCase()) != -1)
 			soundNotification("nick");
+
+		for (let guid in g_PlayerAssignments)
+			msg.text = colorizeNameInText(
+				msg.text,
+				g_PlayerAssignments[guid].name,
+				rgbToGuiColor(g_PlayerAssignments[guid].player != -1 ? g_Players[g_PlayerAssignments[guid].player].color : "white")
+			);
 	}
 
 	// GUID for players, playerID for AIs
