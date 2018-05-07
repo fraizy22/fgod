@@ -251,6 +251,11 @@ function GetTechnologyData(technologyName, civ)
 	return g_TechnologyData[civ][technologyName];
 }
 
+var g_ServerIP;
+var g_ServerPort;
+var g_UseSTUN;
+var g_HostJID;
+
 function init(initData, hotloadData)
 {
 	if (!g_Settings)
@@ -259,6 +264,11 @@ function init(initData, hotloadData)
 		Engine.SwitchGuiPage("page_pregame.xml");
 		return;
 	}
+	
+	g_ServerIP = initData.serverIP;
+	g_ServerPort = initData.serverPort;
+	g_UseSTUN = initData.useSTUN;
+	g_HostJID = initData.hostJID;
 
 	// Fallback used by atlas
 	g_PlayerAssignments = initData ? initData.playerAssignments : { "local": { "player": 1 } };
@@ -282,7 +292,7 @@ function init(initData, hotloadData)
 	initGUIObjects();
 
 	if (hotloadData)
-		g_Selection.selected = hotloadData.selection;
+		g_Selection.selected = hotloadData.selection
 
 	sendLobbyPlayerlistUpdate();
 	onSimulationUpdate();
@@ -536,6 +546,14 @@ function toggleChangePerspective(enabled)
 	selectViewPlayer(g_ViewedPlayer);
 }
 
+function showReplaceButton()
+{
+	// TODO: Offline player (g_Players[g_ViewedPlayer].offline) is at the moment not up-to-date for rejoining players
+	// so we can't show the replace button only for offline players. So for now just show replace button for any networked
+	// game player other than gaia.
+	Engine.GetGUIObjectByName("replaceButton").hidden =  !g_IsNetworked || g_ViewedPlayer < 1 || !g_IsObserver;
+}
+
 /**
  * Change perspective tool.
  * Shown to observers or when enabling the developers option.
@@ -547,6 +565,7 @@ function selectViewPlayer(playerID)
 
 	if (g_ShowAllStatusBars)
 		recalculateStatusBarDisplay(true);
+
 
 	g_IsObserver = isPlayerObserver(Engine.GetPlayerID());
 
@@ -579,6 +598,8 @@ function selectViewPlayer(playerID)
 
 	if (g_IsTradeOpen)
 		openTrade();
+
+	showReplaceButton();
 }
 
 /**
@@ -1490,6 +1511,30 @@ function getBuildString()
 		"buildDate": Engine.GetBuildTimestamp(0),
 		"revision": Engine.GetBuildTimestamp(2)
 	});
+}
+
+function toggleReplace()
+{
+	let selected = Engine.GetGUIObjectByName("viewPlayer").selected;
+	if (selected <= 1)
+		return;
+	
+	let player = g_Players[Engine.GetGUIObjectByName("viewPlayer").selected -1 ];
+
+	// TODO: Offline player (g_Players[g_ViewedPlayer].offline) is at the moment not up-to-date for rejoining players
+	// so we can't enable only replace for offline players. So for now just try replace for any networked game player.
+	if (!player)
+		return;
+
+	Engine.EndGame();
+
+	Engine.SwitchGuiPage("page_gamesetup_mp.xml", {
+		"multiplayerGameType": "join",
+		"name": player.name,
+		"ip": g_ServerIP,
+		"port": g_ServerPort,
+		"useSTUN": g_UseSTUN,
+		"hostJID": g_HostJID});
 }
 
 function showTimeWarpMessageBox()

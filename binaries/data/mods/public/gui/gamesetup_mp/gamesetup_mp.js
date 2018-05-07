@@ -17,6 +17,9 @@ var g_ServerName = "";
  * Cached to pass it to the gamesetup of the controller to report the game to the lobby.
  */
 var g_ServerPort;
+var g_ServerIP;
+var g_UseSTUN;
+var g_HostJID;
 
 var g_IsRejoining = false;
 var g_GameAttributes; // used when rejoining
@@ -31,6 +34,10 @@ var g_StunEndpoint;
 function init(attribs)
 {
 	g_UserRating = attribs.rating;
+	g_ServerPort = attribs.port;
+	g_ServerIP = attribs.ip;
+	g_UseSTUN = attribs.useSTUN;
+	g_HostJID = attribs.hostJID;
 
 	switch (attribs.multiplayerGameType)
 	{
@@ -100,7 +107,9 @@ function confirmSetup()
 	{
 		let joinPlayerName = Engine.GetGUIObjectByName("joinPlayerName").caption;
 		let joinServer = Engine.GetGUIObjectByName("joinServer").caption;
+		g_ServerIP = joinServer;
 		let joinPort = Engine.GetGUIObjectByName("joinPort").caption;
+		g_ServerPort = joinPort;
 
 		if (startJoin(joinPlayerName, joinServer, getValidPort(joinPort), false))
 			switchSetupPage("pageConnecting");
@@ -197,7 +206,11 @@ function pollAndHandleNetworkClient()
 
 				Engine.SwitchGuiPage("page_loading.xml", {
 					"attribs": g_GameAttributes,
+					"serverIP": g_ServerIP,
+					"serverPort": g_ServerPort,
 					"isRejoining": g_IsRejoining,
+					"useSTUN": g_UseSTUN,
+					"hostJID": g_HostJID,
 					"playerAssignments": g_PlayerAssignments
 				});
 				break;
@@ -233,6 +246,7 @@ function pollAndHandleNetworkClient()
 					Engine.SwitchGuiPage("page_gamesetup.xml", {
 						"type": g_GameType,
 						"serverName": g_ServerName,
+						"serverIP": g_ServerIP,
 						"serverPort": g_ServerPort,
 						"stunEndpoint": g_StunEndpoint
 					});
