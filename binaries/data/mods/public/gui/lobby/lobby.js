@@ -429,6 +429,9 @@ function init(attribs)
 
 	if (!Engine.IsXmppClientConnected())
 		reconnectMessageBox();
+
+	if (attribs && attribs.joinGame)
+		Engine.PushGuiPage("page_gamesetup_mp.xml", attribs.joinGame);
 }
 
 function reconnectMessageBox()
@@ -1237,11 +1240,22 @@ function joinSelectedGame()
 		return;
 	}
 
+	let addToName = "";
+	for (let player of stringifiedTeamListToPlayerData(game.players))
+	{
+		let playerNickRating = splitRatingFromNick(player.Name);
+		if (playerNickRating.nick == g_Username && !player.Offline)
+		{
+			addToName = "2";
+			break;
+		}
+	}
+
 	Engine.PushGuiPage("page_gamesetup_mp.xml", {
 		"multiplayerGameType": "join",
 		"ip": ip,
 		"port": port,
-		"name": g_Username,
+		"name": g_Username + addToName, // + "22",
 		"rating": getRejoinRating(game),
 		"useSTUN": !!game.stunIP,
 		"hostJID": game.hostUsername + "@" + g_LobbyServer + "/0ad"

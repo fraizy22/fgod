@@ -203,7 +203,6 @@ function pollAndHandleNetworkClient()
 					if (player.player > 0)	// not observer or GAIA
 						g_GameAttributes.settings.PlayerData[player.player - 1].Name = player.name;
 				}
-
 				Engine.SwitchGuiPage("page_loading.xml", {
 					"attribs": g_GameAttributes,
 					"serverIP": g_ServerIP,

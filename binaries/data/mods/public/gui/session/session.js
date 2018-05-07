@@ -1528,13 +1528,25 @@ function toggleReplace()
 
 	Engine.EndGame();
 
-	Engine.SwitchGuiPage("page_gamesetup_mp.xml", {
-		"multiplayerGameType": "join",
-		"name": player.name,
-		"ip": g_ServerIP,
-		"port": g_ServerPort,
-		"useSTUN": g_UseSTUN,
-		"hostJID": g_HostJID});
+	// Engine.SwitchGuiPage("page_pregame.xml");
+	Engine.SwitchGuiPage("page_lobby.xml", {
+		"joinGame": {
+			"multiplayerGameType": "join",
+			"name": player.name,
+			"ip": g_ServerIP,
+			"port": g_ServerPort,
+			"useSTUN": g_UseSTUN,
+			"hostJID": g_HostJID}
+		});
+
+	// Engine.PushGuiPage("page_gamesetup_mp.xml", {
+	// 	"multiplayerGameType": "join",
+	// 	"name": player.name,
+	// 	"ip": g_ServerIP,
+	// 	"port": g_ServerPort,
+	// 	"replace": true,
+	// 	"useSTUN": g_UseSTUN,
+	// 	"hostJID": g_HostJID});
 }
 
 function showTimeWarpMessageBox()

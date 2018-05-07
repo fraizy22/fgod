@@ -1954,14 +1954,14 @@ function cancelSetup()
 		savePersistMatchSettings();
 
 	Engine.DisconnectNetworkGame();
-
+warn("cancel");
 	if (Engine.HasXmppClient())
 	{
 		Engine.LobbySetPlayerPresence("available");
 
 		if (g_IsController)
 			Engine.SendUnregisterGame();
-
+			warn("cancel2");
 		Engine.SwitchGuiPage("page_lobby.xml", { "dialog": false });
 	}
 	else
