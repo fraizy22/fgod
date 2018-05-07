@@ -32,27 +32,32 @@ const g_LobbyServer = Engine.ConfigDB_GetValue("user", "lobby.server");
  * Current games will be listed in these colors.
  */
 var g_GameColors = {
-	"init": "0 219 0",
-	"waiting": "255 127 0",
-	"running": "219 0 0",
+	"init":    { "style": {}, "buddyStyle": {} },
+	"waiting": { "style": {}, "buddyStyle": {} },
+	"running": { "style": {}, "buddyStyle": {} },
 	"incompatible": "gray"
 };
 
 /**
  * Initial sorting order of the gamelist.
  */
-var g_GameStatusOrder = ["init", "waiting", "running", "incompatible"];
+var g_GameStatusOrder = Object.keys(g_GameColors);
 
 /**
  * The playerlist will be assembled using these values.
  */
 var g_PlayerStatuses = {
-	"available": { "color": "0 219 0",     "status": translate("Online") },
-	"away":      { "color": "229 76 13",   "status": translate("Away") },
-	"playing":   { "color": "200 0 0",     "status": translate("Busy") },
-	"offline":   { "color": "0 0 0",       "status": translate("Offline") },
-	"unknown":   { "color": "178 178 178", "status": translateWithContext("lobby presence", "Unknown") }
+	"available": { "style": {}, "buddyStyle": {} , "status": translate("Online") },
+	"away":      { "style": {}, "buddyStyle": {} , "status": translate("Away") },
+	"playing":   { "style": {}, "buddyStyle": {} , "status": translate("Busy") },
+	"offline":   { "style": {}, "buddyStyle": {} , "status": translate("Offline") },
+	"unknown":   { "style": {}, "buddyStyle": {} , "status": translateWithContext("lobby presence", "Unknown") }
 };
+ 
+/**
+ * Style for indicating the user in the playerlist and the game where he is listed.
+ */
+var g_UserStyle;
 
 var g_RoleNames = {
 	"moderator": translate("Moderator"),
@@ -413,7 +418,7 @@ function init(attribs = {})
 	}
 
 	g_CallbackSet = !!attribs.callback;
-
+	readConfigStatusColors();
 	initMusic();
 	global.music.setState(global.music.states.MENU);
 
@@ -494,6 +499,23 @@ function updateConnectedState()
 
 	for (let button of ["host", "leaderboard", "userprofile", "toggleBuddy"])
 		Engine.GetGUIObjectByName(button + "Button").enabled = Engine.IsXmppClientConnected();
+}
+
+function readConfigStatusColors()
+{
+	for (let i in g_GameColors)
+	{
+		g_GameColors[i].style = { "color": isValidColor(Engine.ConfigDB_GetValue("user", "lobby.statuscolors.games." + i)) };
+		g_GameColors[i].buddyStyle = { "color": isValidColor(Engine.ConfigDB_GetValue("user", "lobby.statuscolors.games.buddy." + i)) };
+	}
+
+	for (let i in g_PlayerStatuses)
+	{
+		g_PlayerStatuses[i].style = { "color": isValidColor(Engine.ConfigDB_GetValue("user", "lobby.statuscolors.players." + i)) };
+		g_PlayerStatuses[i].buddyStyle = { "color": isValidColor(Engine.ConfigDB_GetValue("user", "lobby.statuscolors.players.buddy." + i)) };
+	}
+
+	g_UserStyle = { "color": isValidColor(Engine.ConfigDB_GetValue("user", "lobby.userplayer.color")) };
 }
 
 function updateLobbyColumns()
@@ -707,8 +729,9 @@ function updateToggleBuddy()
 function updatePlayerList()
 {
 	let playersBox = Engine.GetGUIObjectByName("playersBox");
-	let sortBy = playersBox.selected_column || "name";
-	let sortOrder = playersBox.selected_column_order || 1;
+	let sortBy = playersBox.selected_column;
+	let sortOrder = playersBox.selected_column_order;
+	let highlightedBuddy = Engine.ConfigDB_GetValue("user", "lobby.highlightbuddies") == "true";
 
 	let buddyStatusList = [];
 	let playerList = [];
@@ -728,16 +751,26 @@ function updatePlayerList()
 		switch (sortBy)
 		{
 		case 'buddy':
-			sortA = (a.isBuddy ? 1 : 2) + statusA;
-			sortB = (b.isBuddy ? 1 : 2) + statusB;
+			sortA = (a.name == g_Username ? 0 : a.isBuddy ? 1 : 2) + statusA;
+			sortB = (b.name == g_Username ? 0 : b.isBuddy ? 1 : 2) + statusB;
 			break;
 		case 'rating':
 			sortA = +a.rating;
 			sortB = +b.rating;
 			break;
 		case 'status':
-			sortA = statusA;
-			sortB = statusB;
+			sortA = statusOrder.indexOf(a.presence);
+			sortB = statusOrder.indexOf(b.presence);
+
+			// if presences equal, user priored first/last
+			if (sortA == sortB)
+			{
+				if (a.name == g_Username) return -sortOrder;
+				if (b.name == g_Username) return +sortOrder;
+			}
+
+			sortA += b.name.toLowerCase();
+			sortB += a.name.toLowerCase();
 			break;
 		case 'name':
 		default:
@@ -761,11 +794,14 @@ function updatePlayerList()
 		if (presence == "unknown")
 			warn("Unknown presence:" + player.presence);
 
-		let statusColor = g_PlayerStatuses[presence].color;
-		buddyStatusList.push(player.isBuddy ? coloredText(g_BuddySymbol, statusColor) : "");
+		let statusStyle = highlightedBuddy && player.name == g_Username ? g_UserStyle :
+			highlightedBuddy && player.isBuddy ? g_PlayerStatuses[presence].buddyStyle :
+			g_PlayerStatuses[presence].style;
+
+		buddyStatusList.push(player.name == g_Username ? setStringTags(g_UserSymbol, statusStyle) : player.isBuddy ? setStringTags(g_BuddySymbol, statusStyle) : "");
 		playerList.push(colorPlayerName((player.role == "moderator" ? g_ModeratorPrefix : "") + player.name));
-		presenceList.push(coloredText(g_PlayerStatuses[presence].status, statusColor));
-		ratingList.push(coloredText(rating, statusColor));
+		presenceList.push(setStringTags(g_PlayerStatuses[presence].status, statusStyle));
+		ratingList.push(setStringTags(rating, statusStyle));
 		nickList.push(player.name);
 	}
 
@@ -1001,6 +1037,7 @@ function updateGameList()
 	let gamesBox = Engine.GetGUIObjectByName("gamesBox");
 	let sortBy = gamesBox.selected_column;
 	let sortOrder = gamesBox.selected_column_order;
+	let highlightedBuddy = Engine.ConfigDB_GetValue("user", "lobby.highlightbuddies") == "true";
 
 	if (gamesBox.selected > -1)
 	{
@@ -1009,7 +1046,6 @@ function updateGameList()
 	}
 
 	g_GameList = Engine.GetGameList().map(game => {
-
 		game.hasBuddies = 0;
 
 		// Compute average rating of participating players
@@ -1025,6 +1061,8 @@ function updateGameList()
 			// Sort games with playing buddies above games with spectating buddies
 			if (game.hasBuddies < 2 && g_Buddies.indexOf(playerNickRating.nick) != -1)
 				game.hasBuddies = player.Team == "observer" ? 1 : 2;
+
+			game.hasUser = game.hasUser || playerNickRating.nick == g_Username;
 		}
 
 		game.gameRating =
@@ -1037,6 +1075,10 @@ function updateGameList()
 
 		return game;
 	}).filter(game => !filterGame(game)).sort((a, b) => {
+		// keep user games priored first/last
+		if (a.hasUser) return -sortOrder;
+		if (b.hasUser) return +sortOrder;
+
 		let sortA, sortB;
 		switch (sortBy)
 		{
@@ -1088,8 +1130,15 @@ function updateGameList()
 		if (game.ip == g_SelectedGameIP && game.port == g_SelectedGamePort)
 			selectedGameIndex = +i;
 
-		list_buddy.push(game.hasBuddies ? coloredText(g_BuddySymbol, g_GameColors[game.state]) : "");
-		list_name.push(coloredText(gameName, g_GameColors[game.state]));
+		list_buddy.push(game.hasBuddies || game.hasUser ? setStringTags(
+			game.hasUser ? g_UserSymbol : g_BuddySymbol,
+			highlightedBuddy && game.hasUser ? g_UserStyle :
+			highlightedBuddy && game.hasBuddies ? g_GameColors[game.state].buddyStyle :
+			g_GameColors[game.state].style)
+			: "");
+
+		list_name.push(setStringTags(gameName, highlightedBuddy && game.hasUser ? g_UserStyle :
+			highlightedBuddy && game.hasBuddies ? g_GameColors[game.state].buddyStyle : g_GameColors[game.state].style));
 		list_mapName.push(translateMapTitle(game.niceMapName));
 		list_mapSize.push(translateMapSize(game.mapSize));
 		list_mapType.push(g_MapTypes.Title[mapTypeIdx] || "");

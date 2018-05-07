@@ -395,6 +395,12 @@
 				"label": "Start Into Lobby",
 				"tooltip": "Go into lobby at startup.",
 				"config": "gui.startintolobby"
+			},
+			{
+				"type": "boolean",
+				"label": "Highlight buddies",
+				"tooltip": "Highlight user, buddies and their games.",
+				"config": "lobby.highlightbuddies"
 			}
 		]
 	},

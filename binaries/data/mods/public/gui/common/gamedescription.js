@@ -14,6 +14,7 @@ var g_DefaultLobbyRating = 1200;
  */
 var g_BuddyListDelimiter = ",";
 
+var g_UserSymbol = '‣';
 
 /**
  * Returns the nickname without the lobby rating.

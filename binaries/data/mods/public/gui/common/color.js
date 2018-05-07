@@ -4,6 +4,11 @@
 var g_HotkeyTags = {"color": "255 251 131" };
 
 /**
+ * Used as fallback color.
+ */
+var g_DefaultColor = "0 0 0";
+
+/**
  * Concatenate integer color values to a string (for use in GUI objects)
  *
  * @param {Object} color
@@ -154,6 +159,17 @@ function hslToRgb(h, s, l)
 	}
 
 	return [r, g, b].map(n => Math.round(n * 255));
+}
+
+/**
+ * Check for valid rgb color string to use for gui colors.
+ * @param {string} color - either a "r g b" string or color as name string
+ * @returns {string} color string if valid or fallback default color
+ */
+function isValidColor(color)
+{
+	let parts = color.split(" ");
+	return (parts.length == 1 && isNaN(parts[0])) || parts.length == 3 && parts.every(part => part >= 0 && part <= 255) ? color : g_DefaultColor;
 }
 
 function colorizeHotkey(text, hotkey)
