@@ -200,4 +200,16 @@
 		format_y="DECIMAL2"
 		text_align="left"
 	/>
+
+	<!--
+	==========================================
+	ToolTip Styles
+	==========================================
+	-->
+
+	<style name="OnScreenToolTipStyle"
+		font="sans-14"
+		textcolor="white"
+		sprite="BackgroundTranslucent"
+	/>
 </styles>

@@ -168,6 +168,11 @@ function init(data)
 		tab.onMouseWheelUp = () => selectNextTab(1);
 		tab.onMouseWheelDown = () => selectNextTab(-1);
 	}
+	if (Engine.HasXmppClient() && !!g_GameData.gui.isEndGame && !g_GameData.gui.isReplay)
+		Engine.GetGUIObjectByName("onscreenToolTip").caption = sprintf(
+			translate("Hit %(key)s in the lobby to see last game summary."),
+			{ "key": setStringTags("\\[" + Engine.ConfigDB_GetValue("user", "hotkey.summary") + "]", g_HotkeyTags) }
+		);
 }
 
 /**
@@ -468,7 +473,7 @@ function startReplay()
 		return;
 	}
 
-	Engine.SwitchGuiPage("page_loading.xml", {
+	let pageSettings = [ "page_loading.xml", {
 		"attribs": Engine.GetReplayAttributes(g_GameData.gui.replayDirectory),
 		"playerAssignments": {
 			"local": {
@@ -479,7 +484,12 @@ function startReplay()
 		"savedGUIData": "",
 		"isReplay": true,
 		"replaySelectionData": g_GameData.gui.replaySelectionData
-	});
+	} ];
+
+	if (g_GameData.gui.isInLobby)
+		Engine.PopGuiPageCB(pageSettings);
+	else
+		Engine.SwitchGuiPage(...pageSettings);
 }
 
 function initGUILabels()
@@ -489,6 +499,8 @@ function initGUILabels()
 	Engine.GetGUIObjectByName("summaryText").caption =
 		g_GameData.gui.isInGame ?
 			translate("Current Scores") :
+		g_GameData.gui.isInLobby ?
+			translate("Scores of the last game.") :
 		g_GameData.gui.isReplay ?
 			translate("Scores at the end of the game.") :
 		g_GameData.gui.disconnected ?

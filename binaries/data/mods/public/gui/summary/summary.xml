@@ -5,10 +5,6 @@
 	<script directory="gui/common/"/>
 	<script directory="gui/summary/"/>
 
-	<object hotkey="summary">
-		<action on="Press">continueButton();</action>
-	</object>
-
 	<object hotkey="cancel">
 		<action on="Press">
 		if (g_GameData.gui.isInGame)
@@ -208,6 +204,13 @@
 
 			<object name="chartLegend" type="text" style="ModernLabelText" size="15 100%-35 100%-15 100%-5"/>
 		</object>
+ 
+		<object name="onscreenToolTip"
+			type="text"
+			size="20 100%-48 100%-310 100%-20"
+			style="OnScreenToolTipStyle"
+			sprite="BackgroundTranslucent"
+		/>
 
 		<!-- View Lobby Button -->
 		<object name="lobbyButton"
@@ -228,7 +231,11 @@
 			<action on="Press">startReplay();</action>
 		</object>
 
+<<<<<<< HEAD
 		<object type="button" name="continueButton" style="ModernButtonRed" size="100%-160 100%-48 100%-20 100%-20" hotkey="close">
+=======
+		<object type="button" name="continueButton" style="ModernButtonRed" size="100%-160 100%-48 100%-20 100%-20" hotkey="summary">
+>>>>>>> @{-1}
 			<translatableAttribute id="caption">Continue</translatableAttribute>
 			<action on="Press">continueButton();</action>
 		</object>
