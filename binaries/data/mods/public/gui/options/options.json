@@ -12,7 +12,7 @@
 			{
 				"type": "string",
 				"label": "Playername (Multiplayer)",
-				"tooltip": "How you want to be addressed in Multiplayer matches (except lobby).",
+				"tooltip": "How you want to be addressed in Multiplayer matches.",
 				"config": "playername.multiplayer"
 			},
 			{

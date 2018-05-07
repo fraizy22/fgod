@@ -1172,7 +1172,7 @@ function joinButton()
 		return;
 
 	let rating = getRejoinRating(game);
-	let username = rating ? g_Username + " (" + rating + ")" : g_Username;
+	let username = rating ? multiplayerName(g_Username) + " (" + rating + ")" : multiplayerName(g_Username);
 
 	if (game.state == "incompatible")
 		messageBox(
@@ -1241,7 +1241,7 @@ function joinSelectedGame()
 		"multiplayerGameType": "join",
 		"ip": ip,
 		"port": port,
-		"name": g_Username,
+		"name": multiplayerName(g_Username),
 		"rating": getRejoinRating(game),
 		"useSTUN": !!game.stunIP,
 		"hostJID": game.hostUsername + "@" + g_LobbyServer + "/0ad"
@@ -1256,7 +1256,7 @@ function getRejoinRating(game)
 	for (let player of stringifiedTeamListToPlayerData(game.players))
 	{
 		let playerNickRating = splitRatingFromNick(player.Name);
-		if (playerNickRating.nick == g_Username)
+		if (playerNickRating.nick ==  multiplayerName(g_Username))
 			return playerNickRating.rating;
 	}
 	return g_UserRating;

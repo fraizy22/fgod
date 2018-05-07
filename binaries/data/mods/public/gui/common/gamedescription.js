@@ -25,6 +25,15 @@ function splitRatingFromNick(playerName)
 }
 
 /**
+ * Create multiplayer name from username and config multiplayer name if they different.
+ */
+function multiplayerName(username)
+{
+	let multiplayerName = Engine.ConfigDB_GetValue("user", "playername.multiplayer");
+	return !username ? multiplayerName : multiplayerName != username ? multiplayerName + " (" + username + ")" : username;
+}
+
+/**
  * Array of playernames that the current user has marked as buddies.
  */
 var g_Buddies = Engine.ConfigDB_GetValue("user", "lobby.buddies").split(g_BuddyListDelimiter);
