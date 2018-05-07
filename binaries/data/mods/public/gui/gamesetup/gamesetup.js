@@ -241,6 +241,7 @@ var g_IsTutorial;
  * To report the game to the lobby bot.
  */
 var g_ServerName;
+var g_ServerIP;
 var g_ServerPort;
 
 /**
@@ -1112,6 +1113,7 @@ function init(attribs)
 
 	g_IsTutorial = !!attribs.tutorial;
 	g_ServerName = attribs.serverName;
+	g_ServerIP = attribs.serverIP;
 	g_ServerPort = attribs.serverPort;
 	g_StunEndpoint = attribs.stunEndpoint;
 
@@ -1552,6 +1554,8 @@ function handleGamestartMessage(message)
 
 	Engine.SwitchGuiPage("page_loading.xml", {
 		"attribs": g_GameAttributes,
+		"serverIP" : g_ServerIP,
+		"serverPort" : g_ServerPort,
 		"playerAssignments": g_PlayerAssignments
 	});
 }
