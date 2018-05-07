@@ -825,6 +825,8 @@ function onTick()
 
 	handleNetMessages();
 
+	handleNetLobbyMessagesInBackground();
+
 	updateCursorAndTooltip();
 
 	if (g_Selection.dirty)

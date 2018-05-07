@@ -127,6 +127,8 @@ var g_Kicked = false;
  */
 var g_AskedReconnect = false;
 
+var g_CallbackSet = false;
+
 /**
  * Processing of notifications sent by XmppClient.cpp.
  *
@@ -395,15 +397,17 @@ var g_ChatCommands = {
  *
  * @param {Object} attribs
  */
-function init(attribs)
+function init(attribs = {})
 {
-	g_Dialog = attribs && attribs.dialog;
+	g_Dialog = !!attribs.dialog;
 
 	if (!g_Settings)
 	{
 		leaveLobby();
 		return;
 	}
+
+	g_CallbackSet = !!attribs.callback;
 
 	initMusic();
 	global.music.setState(global.music.states.MENU);
@@ -515,7 +519,11 @@ function leaveLobby()
 	if (g_Dialog)
 	{
 		Engine.LobbySetPlayerPresence("playing");
-		Engine.PopGuiPage();
+
+		if (g_CallbackSet)
+			Engine.PopGuiPageCB();
+		else
+			Engine.PopGuiPage();
 	}
 	else
 	{

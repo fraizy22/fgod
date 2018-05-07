@@ -81,6 +81,23 @@ function initMenu()
 	// TODO: Atlas should pass g_GameAttributes.settings
 	for (let button of ["menuExitButton", "summaryButton", "objectivesButton", "diplomacyButton"])
 		Engine.GetGUIObjectByName(button).enabled = !Engine.IsAtlasRunning();
+
+	g_UpdateLobbyNotification = setLobbyButtonIcon;
+}
+
+function setLobbyButtonIcon(notify)
+{
+	let menuButton = Engine.GetGUIObjectByName("menuButton");
+	let lobbyButton = Engine.GetGUIObjectByName("lobbyButton");
+
+	menuButton.caption = translate("Menu");
+	lobbyButton.caption = translate("Lobby");
+	if (notify)
+	{
+		menuButton.caption = sprintf(translate("%(menuButtonCaption)s%(notificationSign)s"), { "menuButtonCaption": menuButton.caption, "notificationSign": g_NofiticationSign });
+		menuButton.tooltip = translate("You have notifications.");
+		lobbyButton.caption = sprintf(translate("%(lobbyButtonCaption)s*"), { "lobbyButtonCaption": lobbyButton.caption, "notificationSign": g_NofiticationSign });
+	}
 }
 
 function updateMenuPosition(dt)
@@ -131,7 +148,9 @@ function lobbyDialogButton()
 		return;
 
 	closeOpenDialogs();
-	Engine.PushGuiPage("page_lobby.xml", { "dialog": true });
+	setLobbyButtonIcon(false);
+	g_LobbyDialogOpened = true;
+	Engine.PushGuiPage("page_lobby.xml", { "dialog": true, "callback": "setLobbyDialogClosed" });
 }
 
 function chatMenuButton()
