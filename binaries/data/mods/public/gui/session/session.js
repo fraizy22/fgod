@@ -1224,20 +1224,40 @@ function updateDebug()
  */
 function getAllyStatTooltip(resource, playerStates, sort)
 {
-	let tooltip = [];
+	let teamStats = {};
 
 	for (let player in playerStates)
-		tooltip.push({
+	{
+		let team = playerStates[player].teamsLocked ? g_Players[player].team + 1 : 0;
+
+		let playerStat = {
 			"playername": colorizePlayernameHelper("■", player) + " " + g_Players[player].name,
-			"statValue": resource == "pop" ?
-				sprintf(translate("%(popCount)s/%(popLimit)s/%(popMax)s"), playerStates[player]) :
-				Math.round(playerStates[player].resourceCounts[resource]),
-			"orderValue": resource == "pop" ? playerStates[player].popCount :
-				Math.round(playerStates[player].resourceCounts[resource])
-		});
-	if (sort)
-		tooltip.sort((a, b) => sort * (b.orderValue - a.orderValue));
-	return "\n" + tooltip.map(stat => sprintf(translate("%(playername)s: %(statValue)s"), stat)).join("\n");
+			"values": resource == "pop" ? [ playerStates[player].popCount, playerStates[player].popLimit, playerStates[player].popMax ] :
+				[ Math.round(playerStates[player].resourceCounts[resource]) ]
+		};
+
+		if (!teamStats[team])
+			teamStats[team] = { "number": team, "players": [], "sum": Array(playerStat.values.length).fill(0), "locked": playerStates[player].teamsLocked };
+
+		teamStats[team].players.push(playerStat);
+		playerStat.values.forEach((value, i) => teamStats[team].sum[i] += value);
+	}
+
+	return "\n" + Object.keys(teamStats).map(team => { return teamStats[team]; }).sort((a, b) => sort * (b.sum[0] - a.sum[0])).map(team =>
+		(team.locked && (g_IsObserver || playerStates[g_ViewedPlayer].hasSharedLos) ?
+			(team.number != 0 ?
+				sprintf(translate("Team %(team)s: %(teamSum)s\n"), {
+					"team": team.number, "teamSum": team.sum.join(translateWithContext("seperator", "/"))
+				}) :
+				translate("No Team:\n"))
+			: "") +
+		team.players.sort((a, b) => sort * (b.values[0] - a.values[0])).map(player => 
+				sprintf(translate("%(playername)s: %(values)s"), {
+					"playername": player.playername,
+					"values": player.values.join(translateWithContext("seperator", "/"))
+				})
+		).join("\n")
+	).join("\n");
 }
 
 function updatePlayerDisplay()
@@ -1247,7 +1267,6 @@ function updatePlayerDisplay()
 	let viewablePlayerStates = {};
 	for (let player in allPlayerStates)
 		if (player != 0 &&
-			player != g_ViewedPlayer &&
 			g_Players[player].state != "defeated" &&
 			(g_IsObserver ||
 				viewedPlayerState.hasSharedLos &&
