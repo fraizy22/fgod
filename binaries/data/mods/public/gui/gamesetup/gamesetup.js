@@ -1034,8 +1034,12 @@ var g_MiscControls = {
 	},
 	"lobbyButton": {
 		"onPress": () => function() {
-			if (Engine.HasXmppClient())
-				Engine.PushGuiPage("page_lobby.xml", { "dialog": true });
+			if (!Engine.HasXmppClient())
+				return;
+
+			setLobbyButtonIcon(false);
+			g_LobbyDialogOpened = true;
+			Engine.PushGuiPage("page_lobby.xml", { "dialog": true, "callback": "setLobbyDialogClosed" });
 		},
 		"hidden": () => !Engine.HasXmppClient()
 	},
@@ -1111,6 +1115,10 @@ function init(attribs)
 	g_ServerPort = attribs.serverPort;
 	g_StunEndpoint = attribs.stunEndpoint;
 
+	setLobbyButtonIcon(false);
+	if (Engine.HasXmppClient())
+		g_UpdateLobbyNotification = setLobbyButtonIcon;
+
 	if (!g_IsNetworked)
 		g_PlayerAssignments = {
 			"local": {
@@ -1133,6 +1141,19 @@ function init(attribs)
 			"hotkey_civinfo": colorizeHotkey("%(hotkey)s", "civinfo"),
 			"hotkey_structree": colorizeHotkey("%(hotkey)s", "structree")
 	});
+}
+
+function setLobbyButtonIcon(notify)
+{
+	Engine.GetGUIObjectByName("lobbyButton").sprite = notify ? "iconBubbleWhite" : "iconBubbleGold";
+
+	Engine.GetGUIObjectByName("lobbyButton").tooltip =
+		sprintf(translate("Show the multiplayer lobby in a dialog window. %(notification)s"), {
+			"notification": notify ? translate("(You have new lobby notifications.)") : ""
+	});
+
+	if (notify)
+		Engine.GetGUIObjectByName("onscreenToolTip").caption = translate("You have new lobby notifications. (Click the lobby icon button.)");
 }
 
 function initDefaults()
@@ -1982,7 +2003,10 @@ function onTick()
 		++g_LoadingState;
 	}
 	else if (g_LoadingState == 2)
+	{
 		handleNetMessages();
+		handleNetLobbyMessagesInBackground();
+	}
 
 	updateTimers();
 

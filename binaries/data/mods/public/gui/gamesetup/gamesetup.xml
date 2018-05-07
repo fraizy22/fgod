@@ -213,7 +213,6 @@
 			<object name="lobbyButton"
 				type="button"
 				style="IconButton"
-				sprite="iconBubbleGold"
 				sprite_over="iconBubbleWhite"
 				size="100%-41 346 100%-25 362"
 				hotkey="lobby"
