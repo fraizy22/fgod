@@ -389,6 +389,12 @@
 				"label": "Game Rating Column",
 				"tooltip": "Show the average rating of the participating players in a column of the gamelist.",
 				"config": "lobby.columns.gamerating"
+			},
+			{
+				"type": "boolean",
+				"label": "Start Into Lobby",
+				"tooltip": "Go into lobby at startup.",
+				"config": "gui.startintolobby"
 			}
 		]
 	},
