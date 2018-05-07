@@ -1580,3 +1580,32 @@ function formatWinRate(attr)
 		"percentage": (attr.wins / attr.totalGamesPlayed * 100).toFixed(2)
 	});
 }
+
+function showLastGameSummary()
+{
+	let replays = Engine.GetReplays(false).filter(replay =>
+		replay.attribs.settings.PlayerData.filter(player => player && !player.AI).length > 1 ).sort((a, b) =>
+			b.attribs.timestamp - a.attribs.timestamp
+		);
+
+	let simData = replays && Engine.GetReplayMetadata(replays[0].directory);
+
+	if (!simData)
+	{
+		messageBox(500, 200, translate("No summary data available."), translate("Error"));
+		return;
+	}
+
+	Engine.PushGuiPage("page_summary.xml", {
+		"sim": simData,
+		"gui": { "replayDirectory": replays[0].directory, "isInLobby": true, "dialog": true },
+		"callback": "startReplay"
+	});
+}
+
+function startReplay(data)
+{
+	if (data)
+		Engine.SwitchGuiPage(...data);
+}
+

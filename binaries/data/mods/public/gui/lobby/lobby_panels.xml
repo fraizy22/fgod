@@ -8,6 +8,10 @@
 
 	<object hotkey="lobby" name="lobbyDialogToggle"/>
 
+	<object hotkey="summary">
+		<action on="Press">showLastGameSummary();</action>
+	</object>
+
 	<!-- Left panel: Player list. -->
 	<object name="leftPanel">
 		<object name="playersBox"

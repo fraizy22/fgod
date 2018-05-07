@@ -773,6 +773,7 @@ function leaveGame(willRejoin)
 			"assignedPlayer": playerID,
 			"disconnected": g_Disconnected,
 			"isReplay": g_IsReplay,
+			"isEndGame": true,
 			"replayDirectory": !g_HasRejoined && replayDirectory,
 			"replaySelectionData": g_ReplaySelectionData
 		}

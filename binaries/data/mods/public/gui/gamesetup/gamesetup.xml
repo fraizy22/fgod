@@ -243,13 +243,7 @@
 			</object>
 
 			<!-- Tooltip -->
-			<object name="onscreenToolTip"
-				type="text"
-				font="sans-14"
-				textcolor="white"
-				sprite="BackgroundTranslucent"
-				size="20 100%-56 100%-312 100%-24"
-			/>
+			<object name="onscreenToolTip" type="text" style="OnScreenToolTipStyle" size="20 100%-56 100%-312 100%-24"/>
 
 			<!-- Cheat Warning Text -->
 			<object size="0 100%-52 100%-320 100%-24" name="cheatWarningText">
