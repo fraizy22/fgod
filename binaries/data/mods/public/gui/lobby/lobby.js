@@ -102,6 +102,11 @@ var g_UserRating = "";
 var g_GameList = [];
 
 /**
+ * All players in the lobby.
+ */
+var g_PlayerList = [];
+
+/**
  * Used to restore the selection after updating the playerlist.
  */
 var g_SelectedPlayer = "";
@@ -703,7 +708,7 @@ function updatePlayerList()
 	let nickList = [];
 	let ratingList = [];
 
-	let cleanPlayerList = Engine.GetPlayerList().map(player => {
+	g_PlayerList = Engine.GetPlayerList().map(player => {
 		player.isBuddy = g_Buddies.indexOf(player.name) != -1;
 		return player;
 	}).sort((a, b) => {
@@ -738,7 +743,7 @@ function updatePlayerList()
 	});
 
 	// Colorize list entries
-	for (let player of cleanPlayerList)
+	for (let player of g_PlayerList)
 	{
 		if (player.rating && player.name == g_Username)
 			g_UserRating = player.rating;
