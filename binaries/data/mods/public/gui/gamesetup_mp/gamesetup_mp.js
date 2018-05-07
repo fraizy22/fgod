@@ -58,7 +58,7 @@ function init(attribs)
 		Engine.GetGUIObjectByName("hostLobbyAuthWrapper").hidden = !Engine.HasXmppClient();
 		if (Engine.HasXmppClient())
 		{
-			Engine.GetGUIObjectByName("hostPlayerName").caption = attribs.name;
+			Engine.GetGUIObjectByName("hostPlayerName").caption = multiplayerName(attribs.name);
 			Engine.GetGUIObjectByName("hostServerName").caption =
 				sprintf(translate("%(name)s's game"), { "name": attribs.name });
 
@@ -300,7 +300,7 @@ function startHost(playername, servername, port)
 {
 	startConnectionStatus("server");
 
-	saveSettingAndWriteToUserConfig("playername.multiplayer", playername);
+	// saveSettingAndWriteToUserConfig("playername.multiplayer", playername);
 
 	saveSettingAndWriteToUserConfig("multiplayerhosting.port", port);
 

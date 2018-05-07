@@ -197,8 +197,8 @@ function onTick()
 		{
 			Engine.PopGuiPage();
 			Engine.SwitchGuiPage("page_lobby.xml", { "dialog": false });
-			saveSettingAndWriteToUserConfig("playername.multiplayer", username);
-			saveSettingAndWriteToUserConfig("lobby.login", username);
+			// saveSettingAndWriteToUserConfig("playername.multiplayer", username);
+			// saveSettingAndWriteToUserConfig("lobby.login", username);
 			// We only store the encrypted password, so make sure to re-encrypt it if changed before saving.
 			if (password != g_EncryptedPassword.substring(0, 10))
 				g_EncryptedPassword = Engine.EncryptPassword(password, username);
