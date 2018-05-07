@@ -536,6 +536,7 @@
 					style="StoneButtonFancy"
 					size="4 164 100%-4 192"
 					tooltip_style="pgToolTip"
+					hotkey="close"
 				>
 					<translatableAttribute id="caption">Exit</translatableAttribute>
 					<translatableAttribute id="tooltip">Exits the game.</translatableAttribute>

@@ -221,7 +221,7 @@
 		<object name="bottomPanel" size="25 100%-55 100%-5 100%-25" >
 
 			<!-- Main Menu Button -->
-			<object type="button" style="StoneButton" size="25 0 17%+25 100%">
+			<object type="button" style="StoneButton" size="25 0 17%+25 100%" hotkey="close">
 				<translatableAttribute id="caption">Main Menu</translatableAttribute>
 				<action on="Press">Engine.SwitchGuiPage("page_pregame.xml");</action>
 			</object>

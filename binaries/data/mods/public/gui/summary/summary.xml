@@ -228,7 +228,7 @@
 			<action on="Press">startReplay();</action>
 		</object>
 
-		<object type="button" name="continueButton" style="ModernButtonRed" size="100%-160 100%-48 100%-20 100%-20">
+		<object type="button" name="continueButton" style="ModernButtonRed" size="100%-160 100%-48 100%-20 100%-20" hotkey="close">
 			<translatableAttribute id="caption">Continue</translatableAttribute>
 			<action on="Press">continueButton();</action>
 		</object>
