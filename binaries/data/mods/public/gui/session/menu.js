@@ -267,6 +267,7 @@ function openChat(command = "")
 		return;
 
 	closeOpenDialogs();
+	showDarkenOverlay(true);
 
 	let chatAddressee = Engine.GetGUIObjectByName("chatAddressee");
 	chatAddressee.selected = chatAddressee.list_data.indexOf(command);
@@ -282,6 +283,7 @@ function closeChat()
 	Engine.GetGUIObjectByName("chatInput").caption = "";
 	Engine.GetGUIObjectByName("chatInput").blur(); // Remove focus
 	Engine.GetGUIObjectByName("chatDialogPanel").hidden = true;
+	showDarkenOverlay(false);
 }
 
 function resizeDiplomacyDialog()
@@ -373,6 +375,7 @@ function onToggleChatWindowExtended()
 function openDiplomacy()
 {
 	closeOpenDialogs();
+	showDarkenOverlay(true);
 
 	if (g_ViewedPlayer < 1)
 		return;
@@ -388,6 +391,7 @@ function closeDiplomacy()
 {
 	g_IsDiplomacyOpen = false;
 	Engine.GetGUIObjectByName("diplomacyDialogPanel").hidden = true;
+	showDarkenOverlay(false);
 }
 
 function toggleDiplomacy()
@@ -651,6 +655,8 @@ function openTrade()
 
 	if (g_ViewedPlayer < 1)
 		return;
+	
+	showDarkenOverlay(true);
 
 	g_IsTradeOpen = true;
 
@@ -1006,6 +1012,7 @@ function closeTrade()
 {
 	g_IsTradeOpen = false;
 	Engine.GetGUIObjectByName("tradeDialogPanel").hidden = true;
+	showDarkenOverlay(true);
 }
 
 function toggleTrade()
@@ -1022,6 +1029,11 @@ function toggleTutorial()
 	let tutorialPanel = Engine.GetGUIObjectByName("tutorialPanel");
 	tutorialPanel.hidden = !tutorialPanel.hidden ||
 	                       !Engine.GetGUIObjectByName("tutorialText").caption;
+}
+
+function showDarkenOverlay(show)
+{
+	Engine.GetGUIObjectByName("sessionOverlayBackground").hidden = !show && !(g_Paused || g_PausingClients.length);
 }
 
 function updateGameSpeedControl()
@@ -1065,6 +1077,7 @@ function toggleObjectives()
 function openObjectives()
 {
 	g_IsObjectivesOpen = true;
+	showDarkenOverlay(true);
 
 	let player = g_Players[Engine.GetPlayerID()];
 	let playerState = player && player.state;
@@ -1089,6 +1102,7 @@ function closeObjectives()
 {
 	g_IsObjectivesOpen = false;
 	Engine.GetGUIObjectByName("objectivesPanel").hidden = true;
+	showDarkenOverlay(false);
 }
 
 /**
@@ -1218,6 +1232,7 @@ function updatePauseOverlay()
 	Engine.GetGUIObjectByName("pausedByText").caption = sprintf(translate("Paused by %(players)s"),
 		{ "players": g_PausingClients.map(guid => colorizePlayernameByGUID(guid)).join(translateWithContext("Separator for a list of players", ", ")) });
 
+	showDarkenOverlay(g_Paused || g_PausingClients.length);
 	Engine.GetGUIObjectByName("pauseOverlay").hidden = !(g_Paused || g_PausingClients.length);
 	Engine.GetGUIObjectByName("pauseOverlay").onPress = g_Paused ? togglePause : function() {};
 }
@@ -1267,6 +1282,7 @@ function closeOpenDialogs()
 	closeDiplomacy();
 	closeTrade();
 	closeObjectives();
+	showDarkenOverlay(false);
 }
 
 function formatTributeTooltip(playerID, resourceCode, amount)
