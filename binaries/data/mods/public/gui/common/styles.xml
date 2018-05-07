@@ -56,7 +56,7 @@
 	-->
 
 	<style name="TranslucentPanel"
-		sprite="BackgroundTranslucent"
+		sprite="ModernFade"
 		buffer_zone="10"
 		font="sans-bold-stroke-14"
 		textcolor="white"
