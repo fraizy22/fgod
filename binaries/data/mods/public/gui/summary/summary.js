@@ -332,7 +332,7 @@ function updateChart(number, category, item, itemNumber, type)
 		return;
 	let chart = Engine.GetGUIObjectByName("chart[" + number + "]");
 	chart.format_y = g_ScorePanelsData[category].headings[itemNumber + 1].format || "INTEGER";
-	Engine.GetGUIObjectByName("chart[" + number + "]XAxisLabel").caption = translate("Time elapsed");
+	Engine.GetGUIObjectByName("chart[" + number + "]XAxisLabel").caption = translate("Time elapsed (min)");
 	let series = [];
 	for (let j = 1; j <= g_PlayerCount; ++j)
 	{
