@@ -54,6 +54,11 @@ const g_BarterActions = ["Buy", "Sell"];
  */
 var g_BarterSell;
 
+/**
+ * Tribute multiplier setted by shift click.
+ */
+var g_TributeMultiplier = 1;
+
 var g_IsMenuOpen = false;
 
 var g_IsDiplomacyOpen = false;
@@ -399,7 +404,7 @@ function toggleDiplomacy()
 		openDiplomacy();
 }
 
-function updateDiplomacy(opening = false)
+function updateDiplomacy(opening)
 {
 	if (g_ViewedPlayer < 1 || !g_IsDiplomacyOpen)
 		return;
@@ -421,9 +426,10 @@ function updateDiplomacy(opening = false)
 
 		diplomacySetupTexts(i, rowsize);
 		diplomacyFormatStanceButtons(i, myself || playerInactive || isCeasefireActive || g_Players[g_ViewedPlayer].teamsLocked);
-		// Tribute buttons do not need to be updated onTick, and should not because of massTributing
 		if (opening)
 			diplomacyFormatTributeButtons(i, myself || playerInactive);
+		else if (!(myself || playerInactive))
+			diplomacyFormatTributeButtonsTooltips(i)
 		diplomacyFormatAttackRequestButton(i, myself || playerInactive || isCeasefireActive || !hasAllies || !g_Players[i].isEnemy[g_ViewedPlayer]);
 		diplomacyFormatSpyRequestButton(i, myself || playerInactive || g_Players[i].isMutualAlly[g_ViewedPlayer] && hasSharedLos);
 	}
@@ -489,6 +495,23 @@ function diplomacyFormatStanceButtons(i, hidden)
 	}
 }
 
+function diplomacyFormatTributeButtonsTooltips(i)
+{
+	let resCodes = g_ResourceData.GetCodes();
+	let r = 0;
+	for (let resCode of resCodes)
+	{
+		let button = Engine.GetGUIObjectByName("diplomacyPlayer[" + (i - 1) + "]_tribute[" + r + "]");
+		if (!button)
+		{
+			warn("Current GUI limits prevent displaying more than " + r + " tribute buttons!");
+			break;
+		}
+		++r;
+		button.tooltip = formatTributeTooltip(i, resCode, 100 * g_TributeMultiplier);
+	}
+}
+
 function diplomacyFormatTributeButtons(i, hidden)
 {
 	let resCodes = g_ResourceData.GetCodes();
@@ -510,31 +533,28 @@ function diplomacyFormatTributeButtons(i, hidden)
 			continue;
 
 		button.enabled = controlsPlayer(g_ViewedPlayer);
-		button.tooltip = formatTributeTooltip(i, resCode, 100);
 		button.onPress = (function(i, resCode, button) {
 			// Shift+click to send 500, shift+click+click to send 1000, etc.
 			// See INPUT_MASSTRIBUTING in input.js
-			let multiplier = 1;
 			return function() {
 				let isBatchTrainPressed = Engine.HotkeyIsPressed("session.masstribute");
 				if (isBatchTrainPressed)
 				{
 					inputState = INPUT_MASSTRIBUTING;
-					multiplier += multiplier == 1 ? 4 : 5;
+					g_TributeMultiplier += g_TributeMultiplier == 1 ? 4 : 5;
 				}
 
 				let amounts = {};
 				for (let res of resCodes)
 					amounts[res] = 0;
-				amounts[resCode] = 100 * multiplier;
+				amounts[resCode] = 100 * g_TributeMultiplier;
 
 				button.tooltip = formatTributeTooltip(i, resCode, amounts[resCode]);
 
-				// This is in a closure so that we have access to `player`, `amounts`, and `multiplier` without some
-				// evil global variable hackery.
+				// This is in a closure so that we have access to `player`, `amounts`.
 				g_FlushTributing = function() {
 					Engine.PostNetworkCommand({ "type": "tribute", "player": i, "amounts": amounts });
-					multiplier = 1;
+					g_TributeMultiplier = 1;
 					button.tooltip = formatTributeTooltip(i, resCode, 100);
 				};
 
@@ -543,6 +563,7 @@ function diplomacyFormatTributeButtons(i, hidden)
 			};
 		})(i, resCode, button);
 	}
+	diplomacyFormatTributeButtonsTooltips(i);
 }
 
 function diplomacyFormatAttackRequestButton(i, hidden)
@@ -1271,10 +1292,21 @@ function closeOpenDialogs()
 
 function formatTributeTooltip(playerID, resourceCode, amount)
 {
-	return sprintf(translate("Tribute %(resourceAmount)s %(resourceType)s to %(playerName)s. Shift-click to tribute %(greaterAmount)s."), {
+	let playerStates = GetSimState().players;
+	return sprintf(translate("Tribute %(resourceAmount)s %(resourceType)s to %(playerName)s. Shift-click to tribute %(greaterAmount)s.%(stock)s"), {
 		"resourceAmount": amount,
 		"resourceType": resourceNameWithinSentence(resourceCode),
 		"playerName": colorizePlayernameByID(playerID),
-		"greaterAmount": amount < 500 ? 500 : amount + 500
+		"greaterAmount": amount < 500 ? 500 : amount + 500,
+		"ownStock": Math.round(playerStates[g_ViewedPlayer].resourceCounts[resourceCode]),
+		"stock": g_IsObserver || (playerStates[g_ViewedPlayer].hasSharedLos &&
+				g_Players[playerID].isMutualAlly[g_ViewedPlayer])
+			 ? sprintf(
+			translate("\nYour/His Stock: %(stock1)s/%(stock2)s"), {
+				"stock1": Math.round(playerStates[g_ViewedPlayer].resourceCounts[resourceCode]),
+				"stock2": Math.round(playerStates[playerID].resourceCounts[resourceCode])})
+			: sprintf(
+			translate("\nYour Stock: %(stock)s"), {
+				"stock": Math.round(playerStates[g_ViewedPlayer].resourceCounts[resourceCode])})
 	});
 }
