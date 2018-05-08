@@ -59,7 +59,8 @@
 		<object name="loadingClientsText" size="50%-300 50%+60 50%+300 50%+110" type="text" style="netStatusPlayersText" hidden="true" z="0"/>
 	</object>
 
-	<object size="0 0 100% 25%" name="sessionOverlayBackground" type="image" sprite="sessionOverlayBackground" ghost="true" hidden="true" z="0"/>
+	<object size="0 0 100% 100%" name="sessionOverlayBackground" type="image" sprite="sessionOverlayBackground" ghost="true" hidden="true" z="0"/>
+	<object size="0 0 100% 25%" name="pauseOverlayBackground" type="image" sprite="sessionOverlayBackground" ghost="true" hidden="true" z="0"/>
 	
 	<!-- Pause Overlay -->
 	<object type="button" name="pauseOverlay" size="0 0 100% 25%" tooltip_style="sessionToolTip" hidden="true" z="0">

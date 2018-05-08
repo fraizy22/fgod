@@ -1073,7 +1073,7 @@ function toggleTutorial()
 
 function showDarkenOverlay(show)
 {
-	Engine.GetGUIObjectByName("sessionOverlayBackground").hidden = !show && !(g_Paused || g_PausingClients.length);
+	Engine.GetGUIObjectByName("sessionOverlayBackground").hidden = !show; // && !(g_Paused || g_PausingClients.length);
 }
 
 function updateGameSpeedControl()
@@ -1272,7 +1272,9 @@ function updatePauseOverlay()
 	Engine.GetGUIObjectByName("pausedByText").caption = sprintf(translate("Paused by %(players)s"),
 		{ "players": g_PausingClients.map(guid => colorizePlayernameByGUID(guid)).join(translateWithContext("Separator for a list of players", ", ")) });
 
-	showDarkenOverlay(g_Paused || g_PausingClients.length);
+	// showDarkenOverlay(g_Paused || g_PausingClients.length);
+	// pauseOverlayBackground
+	Engine.GetGUIObjectByName("pauseOverlayBackground").hidden = !(g_Paused || g_PausingClients.length);
 	Engine.GetGUIObjectByName("pauseOverlay").hidden = !(g_Paused || g_PausingClients.length);
 	Engine.GetGUIObjectByName("pauseOverlay").onPress = g_Paused ? togglePause : function() {};
 }
