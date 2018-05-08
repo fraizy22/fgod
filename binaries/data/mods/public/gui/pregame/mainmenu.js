@@ -15,9 +15,78 @@ var g_BackgroundLayerset;
 var g_T0 = Date.now();
 var g_LastTickTime = Date.now();
 
+
+function setDefaultUserConfs()
+{
+	let values = {
+		"hotkey": { close: "Shift+Escape" },
+		"gui": {
+		startintolobby: false 
+
+		},"gui.lobby": {
+		morebuttonsbar: "hiding"
+			
+		},"load": {
+		gamessort: "date:-1,mapName:1,mapType:1,description:1"
+
+			},"lobby": {
+		highlightbuddies: false     ,       
+		autoawaytime: "5"               ,   
+		presenceselection: "available_awaytime" 
+
+		},"lobby.statuscolors.games": {
+		init: "0 219 0",
+		waiting: "255 127 0",
+		running: "219 0 0" 
+
+		},"lobby.statuscolors.games.buddy": {
+		init: "80 219 219",
+		waiting: "255 127 255",
+		running: "230 80 230"
+
+		},"lobby.statuscolors.players": {
+		available: "0 219 0",
+		away: "229 76 13",
+		playing: "200 0 0",
+		offline: "0 0 0",
+		unknown: "178 178 178"
+
+		},"lobby.statuscolors.players.buddy": {
+		available: "102 226 255",
+		away: "249 156 249",
+		playing: "230 80 230",
+		offline: "44 44 88",
+		unknown: "89 89 178"
+		},"lobby.userplayer": {
+		color: "102 103 255"
+
+		},"lobby.sort": {
+		players: "buddy:1,status:1,name:1,rating:-1",
+		games: "buddy:1,name:1,mapType:1,mapSize:1,gameRating:-1,mapName:1,nPlayers:-1"
+
+		},"replay": {
+		sort: "months:-1,players:1,mapName:1,mapSize:1,popCapacity:1,duration:1"
+			}
+	};
+	
+	Object.keys(values).forEach(key => {
+		Object.keys(values[key]).forEach(key2 => {
+			if (!Engine.ConfigDB_GetValue("user", key + "." + key2))
+			{
+				// warn("Setting default value for user config " + key + "." + key2 + " = " + uneval(values[key][key2]));
+				saveSettingAndWriteToUserConfig(key + "." + key2, values[key][key2]);
+			}
+		})
+	});
+
+}
+
+
 function init(initData, hotloadData)
 {
 	initMusic();
+
+	setDefaultUserConfs();
 
 	global.music.setState(global.music.states.MENU);
 
