@@ -35,7 +35,7 @@ var g_GameColors = {
 	"init":    { "style": {}, "buddyStyle": {} },
 	"waiting": { "style": {}, "buddyStyle": {} },
 	"running": { "style": {}, "buddyStyle": {} },
-	"incompatible": "gray"
+	"incompatible": { "style": { "color": "gray" }, "buddyStyle": { "color": "gray" } }
 };
 
 /**
