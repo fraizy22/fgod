@@ -332,7 +332,7 @@ function cmpObjs(objA, objB, attribute, attributeTranslation, order)
 
 	if (typeof cmpA == "string" && typeof cmpB == "string")
 		return order * cmpA.localeCompare(cmpB, g_Localization);
-		warn(cmpA + " " + objA.name + "|" + cmpB + " " + objB.name)
+		// warn(cmpA + " " + objA.name + "|" + cmpB + " " + objB.name)
 	if (cmpA < cmpB)
 		return -order;
 
