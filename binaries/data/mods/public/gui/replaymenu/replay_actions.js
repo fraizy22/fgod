@@ -117,6 +117,20 @@ function showReplaySummary()
 		messageBox(500, 200, translate("No summary data available."), translate("Error"));
 		return;
 	}
+		
+	function nextSummary(index, direction)
+	{
+		let nextIdx = index;
+		do
+		{
+			nextIdx += direction;
+			if (nextIdx >= g_ReplaysFiltered.length || nextIdx < 0)
+				return -1;
+			if (Engine.HasReplayMetadata(g_ReplaysFiltered[nextIdx].directory))
+				break;
+		} while (true);
+		return nextIdx;
+	}
 
 	Engine.SwitchGuiPage("page_summary.xml", {
 		"sim": simData,
@@ -124,7 +138,9 @@ function showReplaySummary()
 			"dialog": false,
 			"isReplay": true,
 			"replayDirectory": g_ReplaysFiltered[selected].directory,
-			"replaySelectionData": createReplaySelectionData(g_ReplaysFiltered[selected].directory)
+			"replaySelectionData": createReplaySelectionData(g_ReplaysFiltered[selected].directory),
+			"next": nextSummary(selected, 1),
+			"previous": nextSummary(selected, -1)
 		},
 		"selectedData": g_SummarySelectedData
 	});

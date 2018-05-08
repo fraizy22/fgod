@@ -83,6 +83,12 @@ function init(data)
 
 	if (data && data.summarySelectedData)
 		g_SummarySelectedData = data.summarySelectedData;
+	
+	if (data && typeof data.showNextSummary !== "undefined")
+	{
+		Engine.GetGUIObjectByName("replaySelection").selected = data.showNextSummary;
+		showReplaySummary();
+	}
 }
 
 /**

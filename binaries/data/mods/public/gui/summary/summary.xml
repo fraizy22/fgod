@@ -229,6 +229,16 @@
 			</action>
 		</object>
 
+		<object type="button" name="prevReplayButton" style="ModernButtonRed" size="20 100%-48 160 100%-20" hidden="true">
+			<translatableAttribute id="caption">Previous</translatableAttribute>
+			<action on="Press">nextReplaySummary(g_GameData.gui.previous)</action>
+		</object>
+
+		<object type="button" name="nextReplayButton" style="ModernButtonRed" size="170 100%-48 170+140 100%-20" hidden="true">
+			<translatableAttribute id="caption">Next</translatableAttribute>
+			<action on="Press">nextReplaySummary(g_GameData.gui.next)</action>
+		</object>
+
 		<object type="button" name="replayButton" style="ModernButtonRed" size="100%-310 100%-48 100%-170 100%-20">
 			<translatableAttribute id="caption">Replay</translatableAttribute>
 			<action on="Press">startReplay();</action>

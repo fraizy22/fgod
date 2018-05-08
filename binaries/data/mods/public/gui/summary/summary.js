@@ -199,7 +199,6 @@ function selectNextTab(direction)
 function selectPanel(panel)
 {
 	// TODO: move panel buttons to a custom parent object
-
 	for (let button of Engine.GetGUIObjectByName("summaryWindow").children)
 		if (button.name.endsWith("PanelButton"))
 			button.sprite = "ModernTabHorizontalBackground";
@@ -543,7 +542,32 @@ function initGUIButtons()
 	lobbyButtonSize.right = (replayButton.hidden ? Engine.GetGUIObjectByName("continueButton").size.left : replayButton.size.left) - 10;
 	lobbyButtonSize.left = lobbyButtonSize.right - lobbyButtonWidth;
 	lobbyButton.size = lobbyButtonSize;
+
+	if (typeof g_GameData.gui.previous !== "undefined")
+	{
+		Engine.GetGUIObjectByName("prevReplayButton").hidden = false;
+		Engine.GetGUIObjectByName("nextReplayButton").hidden = false;
+		if (g_GameData.gui.previous == -1)
+			Engine.GetGUIObjectByName("prevReplayButton").enabled = false;
+		if (g_GameData.gui.next == -1)
+			Engine.GetGUIObjectByName("nextReplayButton").enabled = false;
+	}
 }
+
+function nextReplaySummary(nextSummary)
+{
+	let summarySelectedData = {
+		"panel": g_SelectedPanel,
+		"charts": g_SelectedChart
+	};
+
+	if (g_GameData.gui.isReplay)
+		Engine.SwitchGuiPage("page_replaymenu.xml", {
+			"replaySelectionData": g_GameData.gui.replaySelectionData,
+			"showNextSummary": nextSummary,
+			"summarySelectedData": summarySelectedData
+		});
+ }
 
 function initTeamData()
 {
