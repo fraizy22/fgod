@@ -128,6 +128,15 @@ var g_Kicked = false;
 var g_AskedReconnect = false;
 
 /**
+ * Manage stacked cancel hotkey. Call first true condition onPress function.
+ */
+let g_CancelHotkey = [
+	() => setLeaderboardVisibility(false),
+	() => setUserProfileVisibility(false),
+	() => setListBoxesUnselected()
+];
+
+/**
  * Processing of notifications sent by XmppClient.cpp.
  *
  * @returns true if the playerlist GUI must be updated.
@@ -467,12 +476,12 @@ function initDialogStyle()
 
 	Engine.GetGUIObjectByName("middlePanel").size = "20%+5 " + (g_Dialog ? "18" : "40") + " 100%-255 100%-20";
 	Engine.GetGUIObjectByName("rightPanel").size = "100%-250 " + (g_Dialog ? "18" : "40") + " 100%-20 100%-20";
-	Engine.GetGUIObjectByName("leftPanel").size = "20 " + (g_Dialog ? "18" : "40") + " 20% 100%-315";
+	setLeftPanelExpanded(true);
 
 	if (g_Dialog)
 	{
 		Engine.GetGUIObjectByName("lobbyDialogToggle").onPress = leaveLobby;
-		Engine.GetGUIObjectByName("cancelDialog").onPress = leaveLobby;
+		g_CancelHotkey.push(leaveLobby);
 	}
 }
 
@@ -831,6 +840,10 @@ function onPlayerListSelection()
 		return;
 
 	g_SelectedPlayer = playerList.list[playerList.selected];
+
+	if (!g_SelectedPlayer)
+		return;
+
 	lookupSelectedUserProfile("playersBox");
 	updateToggleBuddy();
 	selectGameFromPlayername();
@@ -838,18 +851,24 @@ function onPlayerListSelection()
 
 function setLeaderboardVisibility(visible)
 {
+	if (visible == !Engine.GetGUIObjectByName("leaderboard").hidden)
+		return false;
 	if (visible)
 		Engine.SendGetBoardList();
 
 	lookupSelectedUserProfile(visible ? "leaderboardBox" : "playersBox");
 	Engine.GetGUIObjectByName("leaderboard").hidden = !visible;
 	Engine.GetGUIObjectByName("fade").hidden = !visible;
+	return true;
 }
 
 function setUserProfileVisibility(visible)
 {
+	if (visible == !Engine.GetGUIObjectByName("profileFetch").hidden)
+		return false;
 	Engine.GetGUIObjectByName("profileFetch").hidden = !visible;
 	Engine.GetGUIObjectByName("fade").hidden = !visible;
+	return true;
 }
 
 /**
@@ -858,6 +877,23 @@ function setUserProfileVisibility(visible)
 function lookupUserProfile()
 {
 	Engine.SendGetProfile(Engine.GetGUIObjectByName("fetchInput").caption);
+}
+
+function setLeftPanelExpanded(expanded)
+{
+	Engine.GetGUIObjectByName("profilePanel").hidden = expanded;
+	Engine.GetGUIObjectByName("leftPanel").size = "20 " +(g_Dialog ? "18" : "40") + " 20% 100%-105" + (expanded ? "" : "-205");
+}
+ 
+function setListBoxesUnselected()
+{
+	if (Engine.GetGUIObjectByName("gamesBox").selected == -1 &&
+		Engine.GetGUIObjectByName("playersBox").selected == -1)
+		return false;
+	Engine.GetGUIObjectByName("gamesBox").selected = -1;
+	Engine.GetGUIObjectByName("playersBox").selected = -1;
+	setLeftPanelExpanded(true);
+	return true;
 }
 
 /**
@@ -869,10 +905,10 @@ function lookupSelectedUserProfile(guiObjectName)
 {
 	let playerList = Engine.GetGUIObjectByName(guiObjectName);
 	let playerName = playerList.list[playerList.selected];
-
-	Engine.GetGUIObjectByName("profileArea").hidden = !playerName && !Engine.GetGUIObjectByName("usernameText").caption;
 	if (!playerName)
 		return;
+
+	setLeftPanelExpanded(false);
 
 	Engine.SendGetProfile(playerName);
 

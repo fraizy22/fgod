@@ -8,6 +8,12 @@
 
 	<object hotkey="lobby" name="lobbyDialogToggle"/>
 
+	<object hotkey="cancel">
+		<action on="Press">
+			g_CancelHotkey.some(cancel => cancel());
+		</action>
+	</object>
+
 	<!-- Left panel: Player list. -->
 	<object name="leftPanel">
 		<object name="playersBox"
@@ -45,7 +51,7 @@
 
 	<object name="profilePanel" size="20 100%-310 20% 100%-104">
 		<object name="profileBox" type="image" sprite="ModernDarkBoxGold" size="0 0 100% 100%">
-			<object name="profileArea" size="0 0 100% 100%" hidden="true">
+			<object name="profileArea" size="0 0 100% 100%">
 				<object name="usernameText" size="0 0 100% 45" type="text" style="ModernLabelText" font="sans-bold-16" />
 				<object name="roleText" size="0 45 100% 70" type="text" style="ModernLabelText" font="sans-bold-stroke-12" />
 				<object size="0 70 40%+40 90" type="text" style="ModernRightLabelText" font="sans-bold-stroke-13">
@@ -295,7 +301,7 @@
 				lookupSelectedUserProfile(this.name);
 			</action>
 		</object>
-		<object type="button" style="ModernButtonRed" size="50%-133 100%-45 50%-5 100%-17" hotkey="cancel">
+		<object type="button" style="ModernButtonRed" size="50%-133 100%-45 50%-5 100%-17">
 			<translatableAttribute id="caption">Back</translatableAttribute>
 			<action on="Press">
 				setLeaderboardVisibility(false);
@@ -357,7 +363,7 @@
 			</object>
 		</object>
 		</object>
-		<object type="button" style="ModernButtonRed" size="50%-64 100%-50 50%+64 100%-25" hotkey="cancel">
+		<object type="button" style="ModernButtonRed" size="50%-64 100%-50 50%+64 100%-25">
 			<translatableAttribute id="caption">Back</translatableAttribute>
 			<action on="Press">
 				setUserProfileVisibility(false);
@@ -365,8 +371,5 @@
 		</object>
 	</object>
 	<!-- End of user profile lookup -->
-
-	<!-- Keep this hotkey at the end of the gui, because the other cancel hotkeys must be processed first! -->
-	<object hotkey="cancel" name="cancelDialog"/>
 
 </object>
