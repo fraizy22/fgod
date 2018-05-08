@@ -6,6 +6,10 @@
 		onTick();
 	</action>
 
+	<action on="WindowResized">
+		updatePlayerGamesNumber();
+	</action>
+
 	<object hotkey="lobby" name="lobbyDialogToggle"/>
 
 	<object hotkey="summary">
@@ -20,13 +24,14 @@
 
 	<!-- Left panel: Player list. -->
 	<object name="leftPanel">
+		<object name="playerGamesNumber" size="0 0 100% 24" type="text" sprite="ModernDarkBoxGold" font="sans-bold-13" textcolor="255 255 255" text_valign="center" text_align="center"/>
 		<object name="playerList"
 			style="ModernSortedList"
 			selected_column="status"
 			selected_column_order="1"
 			type="olist"
 			sortable="true"
-			size="0 0 100% 100%-24"
+			size="0 23 100% 100%-24"
 			font="sans-bold-stroke-13"
 		>
 			<column id="buddy" width="12"/>
