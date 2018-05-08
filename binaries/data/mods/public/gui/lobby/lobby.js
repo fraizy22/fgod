@@ -1008,7 +1008,7 @@ function updatePlayerList()
 	let presenceList = [];
 	let nickList = [];
 	let ratingList = [];
-
+// warn(uneval(g_PlayersSort))
 	g_PlayerList = Engine.GetPlayerList().map(player => {
 		player.isBuddy = g_Buddies.indexOf(player.name) != -1;
 		return player;
@@ -1018,7 +1018,7 @@ function updatePlayerList()
 		for (let sort of g_PlayersSort)
 		{
 			let ret = cmpObjs(a, b, sort.name, {
-					'buddy': obj => (obj.isBuddy || obj.name == g_Username ? 1 : 2) + status(obj),
+					'buddy': obj => (obj.isBuddy || obj.name == g_Username ? 1 : 2),
 					'rating': obj => +obj.rating,
 					'status': obj => status(obj),
 					'name': obj => obj.name.toLowerCase()
