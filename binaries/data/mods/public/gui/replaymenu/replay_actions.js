@@ -63,7 +63,7 @@ function reallyStartVisualReplay(replayDirectory)
 		return;
 	}
 
-	Engine.SwitchGuiPage("page_loading.xml", {
+	let pageSettings = [ "page_loading.xml", {
 		"attribs": Engine.GetReplayAttributes(replayDirectory),
 		"playerAssignments": {
 			"local": {
@@ -73,7 +73,12 @@ function reallyStartVisualReplay(replayDirectory)
 		},
 		"savedGUIData": "",
 		"replaySelectionData": createReplaySelectionData(replayDirectory)
-	});
+	} ];
+
+	if (Engine.HasXmppClient())
+		Engine.PopGuiPageCB(pageSettings);
+	else
+		Engine.SwitchGuiPage(...pageSettings);
 }
 
 /**
@@ -117,23 +122,46 @@ function showReplaySummary()
 		messageBox(500, 200, translate("No summary data available."), translate("Error"));
 		return;
 	}
-
-	Engine.SwitchGuiPage("page_summary.xml", {
+	let pageSettings = {
 		"sim": simData,
 		"gui": {
 			"dialog": false,
 			"isReplay": true,
+			"isInLobby": Engine.HasXmppClient(),
 			"replayDirectory": g_ReplaysFiltered[selected].directory,
 			"replaySelectionData": createReplaySelectionData(g_ReplaysFiltered[selected].directory)
 		},
-		"selectedData": g_SummarySelectedData
-	});
+		"selectedData": g_SummarySelectedData,
+		"callback": Engine.HasXmppClient() && "cbSummaryStartReplay"
+	};
+
+	if (Engine.HasXmppClient())
+	{
+		pageSettings.gui.dialog = true;
+		Engine.PushGuiPage("page_summary.xml", pageSettings);
+	}
+	else
+		Engine.SwitchGuiPage("page_summary.xml", pageSettings);
+}
+
+function cbSummaryStartReplay(data)
+{
+	if (data)
+		Engine.PopGuiPageCB(data);
 }
 
 function reloadCache()
 {
 	let selected = Engine.GetGUIObjectByName("replaySelection").selected;
 	loadReplays(selected > -1 ? createReplaySelectionData(g_ReplaysFiltered[selected].directory) : "", true);
+}
+
+function close()
+{
+	if (Engine.HasXmppClient())
+		Engine.PopGuiPage();
+	else
+		Engine.SwitchGuiPage("page_pregame.xml");
 }
 
 /**

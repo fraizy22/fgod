@@ -5,11 +5,13 @@
 	<script directory="gui/common/"/>
 	<script directory="gui/replaymenu/" />
 
+	<object type="image" sprite="ModernFade" name="fadeImage"/>
+
 	<!-- Everything displayed in the replay menu. -->
-	<object type="image" style="ModernWindow" size="0 0 100% 100%" name="replayWindow">
+	<object type="image" style="ModernWindow" name="replayWindow">
 
 		<!-- Title -->
-		<object style="ModernLabelText" type="text" size="50%-128 4 50%+128 36">
+		<object style="ModernLabelText" type="text" name="replayWindowTitle">
 			<translatableAttribute id="caption">Replay Games</translatableAttribute>
 		</object>
 
@@ -221,9 +223,8 @@
 		<object name="bottomPanel" size="25 100%-55 100%-5 100%-25" >
 
 			<!-- Main Menu Button -->
-			<object type="button" style="StoneButton" size="25 0 17%+25 100%">
-				<translatableAttribute id="caption">Main Menu</translatableAttribute>
-				<action on="Press">Engine.SwitchGuiPage("page_pregame.xml");</action>
+			<object name="closeButton" type="button" style="StoneButton" size="25 0 17%+25 100%">
+				<action on="Press">close();</action>
 			</object>
 
 			<!-- Delete Button -->

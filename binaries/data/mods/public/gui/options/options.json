@@ -389,6 +389,17 @@
 				"label": "Game Rating Column",
 				"tooltip": "Show the average rating of the participating players in a column of the gamelist.",
 				"config": "lobby.columns.gamerating"
+			},
+			{
+				"type": "dropdown",
+				"label": "Show More Buttons Bar",
+				"tooltip": "Show more buttons bar below chat input not, hidden or always.",
+				"config": "gui.lobby.morebuttonsbar",
+				"list": [
+					{ "value": "disabled", "label": "Disabled" },
+					{ "value": "hiding", "label": "Hiding" },
+					{ "value": "visible", "label": "Visible" }
+				]
 			}
 		]
 	},

@@ -179,6 +179,7 @@ function initGUIWindow()
 	summaryWindow.sprite = g_GameData.gui.dialog ? "ModernDialog" : "ModernWindow";
 	summaryWindow.size = g_GameData.gui.dialog ? "16 24 100%-16 100%-24" : "0 0 100% 100%";
 	Engine.GetGUIObjectByName("summaryWindowTitle").size = g_GameData.gui.dialog ? "50%-128 -16 50%+128 16" : "50%-128 4 50%+128 36";
+	Engine.GetGUIObjectByName("fadeImage").hidden = !g_GameData.gui.dialog;
 }
 
 /**

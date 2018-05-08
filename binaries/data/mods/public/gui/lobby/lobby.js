@@ -128,6 +128,19 @@ var g_Kicked = false;
 var g_AskedReconnect = false;
 
 /**
+ * List of more buttons bar below the chat input.
+ */
+var g_MoreButtonsBarFuncs = {
+	"Replays": () => Engine.PushGuiPage("page_replaymenu.xml", { "callback": "startReplay" }),
+	"Last Summary": () => showLastGameSummary(),
+	"Civilizations": () => Engine.PushGuiPage("page_structree.xml"),
+	"Options": () => Engine.PushGuiPage("page_options.xml", {
+		"selectedCategory": "Lobby",
+		"callback": "initUserConfigurables"
+	})
+};
+
+/**
  * Processing of notifications sent by XmppClient.cpp.
  *
  * @returns true if the playerlist GUI must be updated.
@@ -418,7 +431,7 @@ function init(attribs)
 	Engine.LobbyClearPresenceUpdates();
 	updatePlayerList();
 	updateSubject(Engine.LobbyGetRoomSubject());
-	updateLobbyColumns();
+	initUserConfigurables();
 
 	updateToggleBuddy();
 	Engine.GetGUIObjectByName("chatInput").tooltip = colorizeAutocompleteHotkey();
@@ -485,6 +498,48 @@ function updateConnectedState()
 
 	for (let button of ["host", "leaderboard", "userprofile", "toggleBuddy"])
 		Engine.GetGUIObjectByName(button + "Button").enabled = Engine.IsXmppClientConnected();
+}
+
+function initUserConfigurables()
+{
+	updateLobbyColumns();
+	initGUIMoreButtonsBar();
+}
+
+function initGUIMoreButtonsBar()
+{
+	let showConfig = Engine.ConfigDB_GetValue("user", "gui.lobby.morebuttonsbar");
+
+	Engine.GetGUIObjectByName("moreOptionsBarActionHide").onmouseenter =
+		showConfig == "hiding" ? () => setMoreButtonsBarVisibility(false) : () => true;
+	Engine.GetGUIObjectByName("moreOptionsBarActionShow").onmouseenter =
+		showConfig == "hiding" ? () => setMoreButtonsBarVisibility(true) : () => true;
+
+	setMoreButtonsBarVisibility(showConfig == "visible");
+
+	if (showConfig == "disabled")
+		return;
+
+	let buttonWidthPercentton = (1 / Object.keys(g_MoreButtonsBarFuncs).length) * 100;
+
+	let j = -1;
+	for (let i in g_MoreButtonsBarFuncs)
+	{
+		let button = Engine.GetGUIObjectByName("moreButtons[" + ++j + "]");
+		button.hidden = false;
+		// Let gap "+2" between buttons and calculate size to fit space
+		button.size = j * buttonWidthPercentton + "%" + (j > 0 ? "+2" : "") + " 100%-25 " +
+			((j + 1) * buttonWidthPercentton) + "%" + " 100%";
+		button.caption = i;
+		button.onpress = g_MoreButtonsBarFuncs[i];
+	}
+}
+
+function setMoreButtonsBarVisibility(show)
+{
+	Engine.GetGUIObjectByName("moreOptionsBarActionHide").hidden = !show;
+	Engine.GetGUIObjectByName("chatPanel").size = show ? "0 49% 100% 100%-29" : "0 49% 100% 100%"
+	Engine.GetGUIObjectByName("moreButtons").hidden = !show;
 }
 
 function updateLobbyColumns()
