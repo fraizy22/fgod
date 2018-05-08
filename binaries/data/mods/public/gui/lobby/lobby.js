@@ -235,6 +235,8 @@ let g_CancelHotkey = [
 	() => setListBoxesUnselected()
 ];
 
+var g_OptionsPage = "Lobby";
+
 /**
  * List of more buttons bar below the chat input.
  */
@@ -243,7 +245,7 @@ var g_MoreButtonsBarFuncs = {
 	"Last Summary": () => showLastGameSummary(),
 	"Civilizations": () => Engine.PushGuiPage("page_structree.xml"),
 	"Options": () => Engine.PushGuiPage("page_options.xml", {
-		"selectedCategory": "Lobby",
+		"selectedCategory": g_OptionsPage || "Lobby",
 		"callback": "initUserConfigurables"
 	})
 };
@@ -663,8 +665,10 @@ function initAutoAway()
 		+ 1 || 1) - 1;
 }
 
-function initUserConfigurables()
+function initUserConfigurables(data)
 {
+	g_OptionsPage = data && data.page;
+
 	updateLobbyColumns();
 	initGUIMoreButtonsBar();
 	g_AutoAway.timeMinutes = +Engine.ConfigDB_GetValue("user", "lobby.autoawaytime");
