@@ -1140,7 +1140,7 @@ function formatChatCommand(msg)
 			msg.text = colorizeNameInText(
 				msg.text,
 				g_PlayerAssignments[guid].name,
-				rgbToGuiColor(g_PlayerAssignments[guid].player != -1 ? g_Players[g_PlayerAssignments[guid].player].color : "white")
+				rgbToGuiColor(g_PlayerAssignments[guid].player != -1 ? g_Players[g_PlayerAssignments[guid].player].color : {"r":"255", "g":"255", "b":"255", "a": "255"})
 			);
 	}
 
