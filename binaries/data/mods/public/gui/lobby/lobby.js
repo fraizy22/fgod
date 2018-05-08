@@ -78,17 +78,17 @@ var g_AutoAway = {
 var g_AutoAwayStates = [
 	{
 		"name": "available",
-		"desc": translate("Available"),
+		"desc": () => translate("Available"),
 		"func": () => setPlayerPresence("available", false, false, false)
 	},
 	{
 		"name": "away",
-		"desc": translate("Away"),
+		"desc": () => translate("Away"),
 		"func": () => setPlayerPresence("away", false, false, false)
 	},
 	{
 		"name": "available_awaytime",
-		"desc": sprintf(translate("Away after %(minutes)s %(minute)s"),
+		"desc": () => sprintf(translate("Away after %(minutes)s %(minute)s"),
 		{
 			"minutes": g_AutoAway.timeMinutes,
 			"minute": translatePlural("minute", "minutes", g_AutoAway.timeMinutes)
@@ -97,12 +97,12 @@ var g_AutoAwayStates = [
 	},
 	{
 		"name": "available_awaybackground",
-		"desc": translate("Away when in background"),
+		"desc": () => translate("Away when in background"),
 		"func": () => setPlayerPresence("available", false, true, false)
 	},
 	{
 		"name": "available_awaytimeorbackground",
-		"desc": sprintf(translate("Away after %(minutes)s %(minute)s or in background"),
+		"desc": () => sprintf(translate("Away after %(minutes)s %(minute)s or in background"),
 		{
 			"minutes": g_AutoAway.timeMinutes,
 			"minute": translatePlural("minute", "minutes", g_AutoAway.timeMinutes)
@@ -111,7 +111,7 @@ var g_AutoAwayStates = [
 	},
 	{
 		"name": "available_awaytimeandbackground",
-		"desc": sprintf(translate("Away after %(minutes)s %(minute)s in background"),
+		"desc": () => sprintf(translate("Away after %(minutes)s %(minute)s in background"),
 		{
 			"minutes": g_AutoAway.timeMinutes,
 			"minute": translatePlural("minute", "minutes", g_AutoAway.timeMinutes)
@@ -657,7 +657,7 @@ function readConfigStatusColors()
 function initAutoAway()
 {
 	let presenceDropdown = Engine.GetGUIObjectByName("presenceDropdown");
-	presenceDropdown.list = g_AutoAwayStates.map(state => state.desc);
+	presenceDropdown.list = g_AutoAwayStates.map(state => state.desc());
 	presenceDropdown.list_data = g_AutoAwayStates.map(state => state.name);
 	presenceDropdown.selected = (presenceDropdown.list_data.findIndex(data => data == Engine.ConfigDB_GetValue("user", "lobby.presenceselection"))
 		+ 1 || 1) - 1;
@@ -667,6 +667,8 @@ function initUserConfigurables()
 {
 	updateLobbyColumns();
 	initGUIMoreButtonsBar();
+	g_AutoAway.timeMinutes = +Engine.ConfigDB_GetValue("user", "lobby.autoawaytime");
+	initAutoAway();
 }
 
 function initGUIMoreButtonsBar()
@@ -795,7 +797,7 @@ function setPlayerPresence(presence, awayTime, awayBackground, awayTimeInBackgro
 function handleInputAfterGui(ev)
 {
 	// Wait for window focus to reset auto away.
-	if (ev.type != "mousemotion" && g_WindowFocus)
+	if (g_WindowFocus) // ev.type != "mousemotion" && 
 		resetAutoAway();
 
 	return false;
