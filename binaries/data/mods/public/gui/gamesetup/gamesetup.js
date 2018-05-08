@@ -1877,7 +1877,7 @@ function loadPersistMatchSettings()
 		return;
 
 	if (data.engine_info.engine_version != Engine.GetEngineInfo().engine_version ||
-	    !hasSameMods(data.engine_info.mods, Engine.GetEngineInfo().mods))
+	    !hasSameMods(data.engine_info.mods, Engine.GetEngineInfo().mods.filter(mod => mod[0] != "fgod")))
 		return;
 
 	g_IsInGuiUpdate = true;

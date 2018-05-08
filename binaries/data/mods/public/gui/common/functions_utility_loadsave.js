@@ -5,7 +5,7 @@ function sortDecreasingDate(a, b)
 
 function isCompatibleSavegame(metadata, engineInfo)
 {
-	return engineInfo && hasSameEngineVersion(metadata, engineInfo) & hasSameMods(metadata.mods, engineInfo.mods);
+	return engineInfo && hasSameEngineVersion(metadata, engineInfo) & hasSameMods(metadata.mods, engineInfo.mods.filter(mod => mod[0] != "fgod"));
 }
 
 function generateSavegameDateString(metadata, engineInfo)
