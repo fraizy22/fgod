@@ -1416,7 +1416,7 @@ function updateGameList()
 				Math.round(playerRatings.reduce((sum, current) => sum + current) / playerRatings.length) :
 				g_DefaultLobbyRating;
 
-		if (!hasSameMods(JSON.parse(game.mods), Engine.GetEngineInfo().mods))
+		if (!hasSameMods(JSON.parse(game.mods), Engine.GetEngineInfo().mods.filter(mod => mod[0] != "fgod")))
 			game.state = "incompatible";
 
 		return game;
