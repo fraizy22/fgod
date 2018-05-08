@@ -74,6 +74,12 @@ function init(data)
 
 	initHotkeyTooltips();
 	displayReplayList();
+	
+	if (data && typeof data.showNextSummary !== "undefined")
+	{
+		Engine.GetGUIObjectByName("replaySelection").selected = data.showNextSummary;
+		showReplaySummary();
+	}
 
 	if (data && data.summarySelectedData)
 		g_SummarySelectedData = data.summarySelectedData;
