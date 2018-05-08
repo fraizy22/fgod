@@ -102,6 +102,11 @@ var g_UserRating = "";
 var g_GameList = [];
 
 /**
+ * All players in the lobby.
+ */
+var g_PlayerList = [];
+
+/**
  * Used to restore the selection after updating the playerlist.
  */
 var g_SelectedPlayer = "";
@@ -703,7 +708,7 @@ function updatePlayerList()
 	let nickList = [];
 	let ratingList = [];
 
-	let cleanPlayerList = Engine.GetPlayerList().map(player => {
+	g_PlayerList = Engine.GetPlayerList().map(player => {
 		player.isBuddy = g_Buddies.indexOf(player.name) != -1;
 		return player;
 	}).sort((a, b) => {
@@ -738,7 +743,7 @@ function updatePlayerList()
 	});
 
 	// Colorize list entries
-	for (let player of cleanPlayerList)
+	for (let player of g_PlayerList)
 	{
 		if (player.rating && player.name == g_Username)
 			g_UserRating = player.rating;
@@ -763,6 +768,7 @@ function updatePlayerList()
 	playersBox.list = nickList;
 
 	playersBox.selected = playersBox.list.indexOf(g_SelectedPlayer);
+	updatePlayerGamesNumber();
 }
 
 /**
@@ -978,6 +984,71 @@ function updateLeaderboard()
 		leaderboard.selected = -1;
 }
 
+function updatePlayerGamesNumber()
+{
+	let guiObj = Engine.GetGUIObjectByName("playerGamesNumber");
+	let info = [];
+	let tooltip = [];
+
+	let formatInfo = (count, availableCount, name) => {
+		if (count == 0)
+			return "";
+		let numbers = [ count ];
+		if (availableCount > 0 )
+			numbers.push('[color="0 255 0"]' + availableCount + '[/color]');
+		return sprintf(translate("%(number)s %(info)s"), {
+			"number": numbers.join(translateWithContext("value separator", "/")),
+			"info": name
+		});
+	};
+
+	info.push(formatInfo(
+		g_PlayerList.length,
+		g_PlayerList.filter(player => player.presence == "available").length,
+		translatePlural("Player", "Players", g_PlayerList.length)
+	));
+
+	let buddyPlayerInfo = "";
+	let buddiesList = g_PlayerList.filter(player => player.isBuddy);
+	buddyPlayerInfo = formatInfo(
+		buddiesList.length,
+		buddiesList.filter(player => player.presence == "available").length,
+		translatePlural("Buddy", "Buddies", buddiesList.length)
+	);
+
+	info.push(formatInfo(
+		g_GameList.length,
+		g_GameList.filter(game => game.state == "init").length,
+		translatePlural("Game", "Games", g_GameList.length)
+	));
+
+	let buddyGamesInfo = "";
+	let buddiesGamesList = g_GameList.filter(game => game.hasBuddies);
+	buddyGamesInfo = formatInfo(
+		buddiesGamesList.length,
+		buddiesGamesList.filter(game => game.state == "init").length,
+		translatePlural("Buddy Game", "Buddy Games", buddiesGamesList.length)
+	);
+
+	let caption = arr => arr.filter(str => str).join(translateWithContext("info separator", " · "));
+	let removeFormationCode = string => string.replace(/\[.*?\]/g, "");
+
+	for (let [ position, buddyInfo ] of [ [ 1, buddyPlayerInfo ], [ 3, buddyGamesInfo ] ])
+	{
+		if (buddyInfo == "")
+			continue;
+		if (Engine.GetTextWidth(guiObj.font, removeFormationCode(caption(info.concat(buddyInfo))) + "      ")
+			<
+			guiObj.getComputedSize().right - guiObj.getComputedSize().left)
+			info.splice(position, 0, buddyInfo);
+		else
+			tooltip.push(buddyInfo);
+	}
+
+	guiObj.caption = caption(info);
+	guiObj.tooltip = '[font="' + guiObj.font + '"]' + caption(tooltip) + '[/font]';
+}
+
 /**
  * Update the game listing from data cached in C++.
  */
@@ -1100,6 +1171,7 @@ function updateGameList()
 	gamesBox.selected = selectedGameIndex;
 
 	updateGameSelection();
+	updatePlayerGamesNumber();
 }
 
 /**
