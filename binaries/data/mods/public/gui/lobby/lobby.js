@@ -433,6 +433,11 @@ var g_NetMessageTypes = {
 };
 
 /**
+ * Remembering Away Option when go "/away" and "/back"
+ */
+var g_SavedAwayOption = 0;
+
+/**
  * Commands that can be entered by clients via chat input.
  * A handler returns true if the user input should be sent as a chat message.
  */
@@ -441,6 +446,9 @@ var g_ChatCommands = {
 		"description": translate("Set your state to 'Away'."),
 		"handler": args => {
 			Engine.LobbySetPlayerPresence("away");
+			let presenceDropdown = Engine.GetGUIObjectByName("presenceDropdown");
+			g_SavedAwayOption = presenceDropdown.selected;
+			presenceDropdown.selected = g_AutoAwayStates.findIndex(opt => opt.name == "away");
 			return false;
 		}
 	},
@@ -448,6 +456,7 @@ var g_ChatCommands = {
 		"description": translate("Set your state to 'Online'."),
 		"handler": args => {
 			Engine.LobbySetPlayerPresence("available");
+			Engine.GetGUIObjectByName("presenceDropdown").selected = g_SavedAwayOption;
 			return false;
 		}
 	},
@@ -1406,12 +1415,12 @@ function updateGameList()
 
 		return game;
 	}).filter(game => !filterGame(game)).sort((a, b) => {
-		// keep user games priored first/last
-		if (a.hasUser) return -sort.order;
-		if (b.hasUser) return +sort.order;
-
 		for (let sort of g_GamesSort)
 		{
+			// keep user games priored first/last
+			if (a.hasUser) return -sort.order;
+			if (b.hasUser) return +sort.order;
+
 			if (gamesBox["hidden_" + sort.name])
 				continue;
 
@@ -1551,7 +1560,7 @@ function selectedGame()
 function joinButton()
 {
 	let game = selectedGame();
-	if (!game || g_Dialog)
+	if (!game || (g_Dialog && !g_InGame))
 		return;
 
 	let rating = getRejoinRating(game);
@@ -1631,7 +1640,7 @@ function joinSelectedGame()
 		}
 	}
 
-	Engine.PushGuiPage("page_gamesetup_mp.xml", {
+	let settings = {
 		"multiplayerGameType": "join",
 		"ip": ip,
 		"port": port,
@@ -1639,7 +1648,15 @@ function joinSelectedGame()
 		"rating": getRejoinRating(game),
 		"useSTUN": !!game.stunIP,
 		"hostJID": game.hostUsername + "@" + g_LobbyServer + "/0ad"
-	});
+	};
+
+	if (g_InGame)
+	{
+		Engine.EndGame();
+		Engine.SwitchGuiPage("page_lobby.xml", { "joinGame": settings });
+	}
+	else
+		Engine.PushGuiPage("page_gamesetup_mp.xml", settings);
 }
 
 /**
