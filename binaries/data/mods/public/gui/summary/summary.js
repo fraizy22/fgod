@@ -433,7 +433,9 @@ function updatePanelData(panelInfo)
 
 		let civIcon = Engine.GetGUIObjectByName(playerCivicBoxColumn);
 		civIcon.sprite = "stretched:" + g_CivData[playerState.civ].Emblem;
-		civIcon.tooltip = g_CivData[playerState.civ].Name;
+		civIcon.tooltip = g_CivData[playerState.civ].Name + " - " +
+			setStringTags("\\[Click]", g_HotkeyTags) + " to open Structure Tree";
+		civIcon.onPress = (civ => function() { showCivGui(civ); })(playerState.civ);
 
 		updateCountersPlayer(playerState, panelInfo.counters, panelInfo.headings, playerCounterValue, index);
 	}
@@ -573,7 +575,12 @@ function nextReplaySummary(nextSummary)
 			"showNextSummary": nextSummary,
 			"summarySelectedData": summarySelectedData
 		});
- }
+}
+
+function showCivGui(civ)
+{	
+	Engine.PushGuiPage("page_structree.xml", { "civ" : civ });
+}
 
 function initTeamData()
 {
