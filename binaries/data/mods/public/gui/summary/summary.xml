@@ -138,7 +138,7 @@
 							<object type="image" name="playerBoxt[i][n]" size="10 0 10 30" hidden="true">
 								<object name="playerOutcomet[i][n]" type="image" size="4 5 36 37"/>
 								<object name="playerNamet[i][n]" type="text" size="46 2 214 100%" style="ModernLeftLabelText"/>
-								<object name="civIcont[i][n]" type="image" size="214 5 246 37" />
+								<object name="civIcont[i][n]" type="button" size="214 5 246 37" />
 								<repeat var="x" count="9">
 									<object name="valueDataTeam[i][n][x]" type="text" style="ModernTopLabelText"/>
 								</repeat>
@@ -157,7 +157,7 @@
 					<object type="image" name="playerBox[n]" size="10 0 10 30" hidden="true">
 						<object name="playerOutcome[n]" type="image" size="4 5 36 37"/>
 						<object name="playerName[n]" type="text" size="46 2 214 100%" style="ModernLeftLabelText"/>
-						<object name="civIcon[n]" type="image" size="214 5 246 37"/>
+						<object name="civIcon[n]" type="button" size="214 5 246 37"/>
 						<repeat var="x" count="9">
 							<object name="valueData[n][x]" type="text" style="ModernTopLabelText"/>
 						</repeat>
