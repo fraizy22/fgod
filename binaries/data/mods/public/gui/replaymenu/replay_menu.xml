@@ -10,7 +10,7 @@
 
 		<!-- Title -->
 		<object style="ModernLabelText" type="text" size="50%-128 4 50%+128 36">
-			<translatableAttribute id="caption">Replay Games</translatableAttribute>
+			<translatableAttribute id="caption">Watch Replay Games</translatableAttribute>
 		</object>
 
 		<!-- Left Panel: Filters & Replay List -->
@@ -250,7 +250,7 @@
 
 			<!-- Start Replay Button -->
 			<object name="startReplayButton" type="button" style="StoneButton" size="83%-25 0 100%-25 100%">
-				<translatableAttribute id="caption">Start Replay</translatableAttribute>
+				<translatableAttribute id="caption">Watch Replay</translatableAttribute>
 				<action on="Press">startReplay();</action>
 			</object>
 
