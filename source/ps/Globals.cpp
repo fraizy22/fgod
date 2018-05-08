@@ -18,6 +18,7 @@
 #include "precompiled.h"
 #include "Globals.h"
 
+#include "gui/GUIManager.h"
 #include "network/NetClient.h"
 #include "ps/GameSetup/Config.h"
 #include "soundmanager/ISoundManager.h"
@@ -53,9 +54,13 @@ InReaction GlobalsInputHandler(const SDL_Event_* ev)
 			break;
 		case SDL_WINDOWEVENT_FOCUS_GAINED:
 			g_app_has_focus = true;
+			if (g_GUI)
+				g_GUI->SendEventToAll("WindowFocus");
 			break;
 		case SDL_WINDOWEVENT_FOCUS_LOST:
 			g_app_has_focus = false;
+			if (g_GUI)
+				g_GUI->SendEventToAll("WindowBlur");
 			break;
 		case SDL_WINDOWEVENT_ENTER:
 			g_mouse_active = true;

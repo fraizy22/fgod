@@ -401,6 +401,13 @@
 				"label": "Highlight buddies",
 				"tooltip": "Highlight user, buddies and their games.",
 				"config": "lobby.highlightbuddies"
+			},
+			{
+				"type": "number",
+				"label": "Auto Away Minutes",
+				"tooltip": "Number of minutes before you are set to auto away.",
+				"config": "lobby.autoawaytime",
+				"min": "1"
 			}
 		]
 	},

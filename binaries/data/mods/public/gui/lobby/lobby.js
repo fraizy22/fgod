@@ -59,6 +59,81 @@ var g_PlayerStatuses = {
  */
 var g_UserStyle;
 
+/**
+ * Configuration auto away.
+ */
+var g_AutoAway = {
+	"timeMinutes": +Engine.ConfigDB_GetValue("user", "lobby.autoawaytime"),
+	"time": false,
+	"background": false,
+	"timeInBackground": false,
+	"timerHandler": 0,
+	"applied": false
+};
+
+/**
+ * Different states for presence and auto-away feature.
+ * Called as function due to configurable g_AutoAway.timeMinutes.
+ */
+var g_AutoAwayStates = [
+	{
+		"name": "available",
+		"desc": translate("Available"),
+		"func": () => setPlayerPresence("available", false, false, false)
+	},
+	{
+		"name": "away",
+		"desc": translate("Away"),
+		"func": () => setPlayerPresence("away", false, false, false)
+	},
+	{
+		"name": "available_awaytime",
+		"desc": sprintf(translate("Away after %(minutes)s %(minute)s"),
+		{
+			"minutes": g_AutoAway.timeMinutes,
+			"minute": translatePlural("minute", "minutes", g_AutoAway.timeMinutes)
+		}),
+		"func": () => setPlayerPresence("available", true, false, false)
+	},
+	{
+		"name": "available_awaybackground",
+		"desc": translate("Away when in background"),
+		"func": () => setPlayerPresence("available", false, true, false)
+	},
+	{
+		"name": "available_awaytimeorbackground",
+		"desc": sprintf(translate("Away after %(minutes)s %(minute)s or in background"),
+		{
+			"minutes": g_AutoAway.timeMinutes,
+			"minute": translatePlural("minute", "minutes", g_AutoAway.timeMinutes)
+		}),
+		"func": () => setPlayerPresence("available", true, true, false)
+	},
+	{
+		"name": "available_awaytimeandbackground",
+		"desc": sprintf(translate("Away after %(minutes)s %(minute)s in background"),
+		{
+			"minutes": g_AutoAway.timeMinutes,
+			"minute": translatePlural("minute", "minutes", g_AutoAway.timeMinutes)
+		}),
+		"func": () => setPlayerPresence("available", true, true, true)
+	}
+];
+
+/**
+ * Indicator for window focus state.
+ */
+var g_WindowFocus = true;
+
+/**
+ * Presence change, after timeout apply latest.
+ */
+var g_Presence = {
+	"timer": 0,
+	"setNew": "",
+	"timeoutMilliSeconds": 500
+};
+
 var g_RoleNames = {
 	"moderator": translate("Moderator"),
 	"participant": translate("Player"),
@@ -446,7 +521,7 @@ function init(attribs = {})
 	initGameFilters();
 	updateConnectedState();
 
-	Engine.LobbySetPlayerPresence("available");
+	initAutoAway();
 
 	// When rejoining the lobby after a game, we don't need to process presence changes
 	Engine.LobbyClearPresenceUpdates();
@@ -520,6 +595,7 @@ function initDialogStyle()
 function updateConnectedState()
 {
 	Engine.GetGUIObjectByName("chatInput").hidden = !Engine.IsXmppClientConnected();
+	Engine.GetGUIObjectByName("presenceDropdown").enabled = Engine.IsXmppClientConnected();
 
 	for (let button of ["host", "leaderboard", "userprofile", "toggleBuddy"])
 		Engine.GetGUIObjectByName(button + "Button").enabled = Engine.IsXmppClientConnected();
@@ -540,6 +616,18 @@ function readConfigStatusColors()
 	}
 
 	g_UserStyle = { "color": isValidColor(Engine.ConfigDB_GetValue("user", "lobby.userplayer.color")) };
+}
+
+/**
+ * Initiate presences dropdown and configurable auto away time minutes.
+ */
+function initAutoAway()
+{
+	let presenceDropdown = Engine.GetGUIObjectByName("presenceDropdown");
+	presenceDropdown.list = g_AutoAwayStates.map(state => state.desc);
+	presenceDropdown.list_data = g_AutoAwayStates.map(state => state.name);
+	presenceDropdown.selected = (presenceDropdown.list_data.findIndex(data => data == Engine.ConfigDB_GetValue("user", "lobby.presenceselection"))
+		+ 1 || 1) - 1;
 }
 
 function updateLobbyColumns()
@@ -567,6 +655,9 @@ function updateLobbyColumns()
 
 function leaveLobby()
 {
+	if (g_AutoAway.timerHandler)
+		clearTimeout(g_AutoAway.timerHandler);
+
 	if (g_Dialog)
 	{
 		Engine.LobbySetPlayerPresence("playing");
@@ -581,6 +672,82 @@ function leaveLobby()
 		Engine.StopXmppClient();
 		Engine.SwitchGuiPage("page_pregame.xml");
 	}
+}
+
+/**
+ * Apply lobby player presence and save it in user config.
+ */
+function applyPlayerPresence(presence)
+{
+	Engine.LobbySetPlayerPresence(presence);
+	let dropdown = Engine.GetGUIObjectByName("presenceDropdown");
+	Engine.ConfigDB_CreateValue("user", "lobby.presenceselection", dropdown.list_data[dropdown.selected]);
+	Engine.ConfigDB_WriteValueToFile("user", "lobby.presenceselection", dropdown.list_data[dropdown.selected], "config/user.cfg");
+}
+
+/**
+ * Apply lobby presence for player.
+ * 500ms timeouts between multiple presence changes. After timeout applies latest presence change.
+ * 
+ * @param {string} presence - Presence string for user. ("available", "away", "busy")
+ * @param {bool} awayTime - Optional auto away when time g_AutoAway.timeMinutes inactive.
+ * @param {bool} awayBackground - Optional auto away when window looses focus.
+ * @param {bool} awayTimeInBackground - Optional auto away when time inactive while window is unfocused.
+ */
+function setPlayerPresence(presence, awayTime, awayBackground, awayTimeInBackground)
+{
+	g_AutoAway.time = awayTime;
+	g_AutoAway.background = awayBackground;
+	g_AutoAway.timeInBackground = awayTimeInBackground;
+	resetAutoAway();
+
+	// When timeout, store presence.
+	if (g_Presence.timer)
+		g_Presence.setNew = presence;
+	else
+	{
+		applyPlayerPresence(presence);
+		g_Presence.setNew = "";
+		// Start timeout for next presence apply.
+		g_Presence.timer = setTimeout(() => {
+			if (g_Presence.setNew)
+				applyPlayerPresence(g_Presence.setNew);
+			g_Presence.timer = 0;
+			}, g_Presence.timeoutMilliSeconds);
+	}
+}
+
+function handleInputAfterGui(ev)
+{
+	// Wait for window focus to reset auto away.
+	if (ev.type != "mousemotion" && g_WindowFocus)
+		resetAutoAway();
+
+	return false;
+}
+
+function setAutoAway()
+{
+	Engine.LobbySetPlayerPresence("away");
+	g_AutoAway.applied = true;
+}
+
+function resetAutoAway()
+{
+	if (g_AutoAway.applied)
+	{
+		Engine.LobbySetPlayerPresence("available");
+		g_AutoAway.applied = false;
+	}
+
+	if (g_AutoAway.timerHandler)
+		clearTimeout(g_AutoAway.timerHandler);
+
+	if (g_AutoAway.time && (!g_AutoAway.timeInBackground || !g_WindowFocus))
+		g_AutoAway.timerHandler = setTimeout(setAutoAway, 1000 * 60 * g_AutoAway.timeMinutes);
+
+	if (g_AutoAway.background && !g_AutoAway.timeInBackground && !g_WindowFocus)
+		setAutoAway();
 }
 
 function initGameFilters()
