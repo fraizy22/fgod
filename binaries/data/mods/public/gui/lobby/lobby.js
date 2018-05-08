@@ -1008,7 +1008,7 @@ function updatePlayerList()
 	let presenceList = [];
 	let nickList = [];
 	let ratingList = [];
-// warn(uneval(g_PlayersSort))
+
 	g_PlayerList = Engine.GetPlayerList().map(player => {
 		player.isBuddy = g_Buddies.indexOf(player.name) != -1;
 		return player;
