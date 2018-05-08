@@ -1601,10 +1601,24 @@ function joinButton()
 		);
 }
 
+function joinSelectedGame()
+{
+	if (g_InGame)
+		messageBox(
+			400, 200,
+			translate("Do you want to end the current game and join selected game?"),
+			translate("Confirmation"),
+			[translate("No"), translate("Yes")],
+			[null, joinSelectedGameReally]
+		);
+	else
+		joinSelectedGameReally();
+}
+
 /**
  * Attempt to join the selected game without asking for confirmation.
  */
-function joinSelectedGame()
+function joinSelectedGameReally()
 {
 	let game = selectedGame();
 	if (!game)

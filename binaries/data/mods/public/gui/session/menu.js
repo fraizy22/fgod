@@ -99,7 +99,7 @@ function setLobbyButtonIcon(notify)
 	let lobbyButton = Engine.GetGUIObjectByName("lobbyButton");
 
 	menuButton.caption = translate("Menu");
-	lobbyButton.caption = translate("Lobby");
+	lobbyButton.caption = translate("Lobby Dialog");
 	if (notify)
 	{
 		menuButton.caption = sprintf(translate("%(menuButtonCaption)s%(notificationSign)s"), { "menuButtonCaption": menuButton.caption, "notificationSign": g_NofiticationSign });

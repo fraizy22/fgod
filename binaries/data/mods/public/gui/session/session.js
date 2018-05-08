@@ -1566,13 +1566,24 @@ function toggleReplace()
 	if (!player)
 		return;
 
+	messageBox(
+		400, 200,
+		translate("Do you want to replace \"" + player.name + "\" in the game?"),
+		translate("Confirmation"),
+		[translate("No"), translate("Yes")],
+		[null, () => toggleReplaceReally(player.name)]
+	);
+}
+
+function toggleReplaceReally(playerName)
+{
 	Engine.EndGame();
 
 	// Engine.SwitchGuiPage("page_pregame.xml");
 	Engine.SwitchGuiPage("page_lobby.xml", {
 		"joinGame": {
 			"multiplayerGameType": "join",
-			"name": player.name,
+			"name": playerName,
 			"ip": g_ServerIP,
 			"port": g_ServerPort,
 			"useSTUN": g_UseSTUN,

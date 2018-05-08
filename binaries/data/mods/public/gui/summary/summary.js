@@ -472,6 +472,20 @@ function continueButton()
 function startReplay()
 {
 	if (g_GameData.gui.ingame)
+		messageBox(
+			400, 200,
+			translate("Do you want to end current game and start replay?"),
+			translate("Confirmation"),
+			[translate("No"), translate("Yes")],
+			[null, () => reallyStartReplay()]
+		);
+	else
+		reallyStartReplay();
+}
+
+function reallyStartReplay()
+{
+	if (g_GameData.gui.ingame)
 		Engine.EndGame();
 
 	if (!Engine.StartVisualReplay(g_GameData.gui.replayDirectory))
@@ -494,7 +508,7 @@ function startReplay()
 	} ];
 
 	if (g_GameData.gui.isInLobby)
-		Engine.PopGuiPageCB(pageSettings);
+		Engine.PopGuiPageCB({ "startReplay": pageSettings });
 	else
 		Engine.SwitchGuiPage(...pageSettings);
 }
@@ -569,12 +583,16 @@ function nextReplaySummary(nextSummary)
 		"charts": g_SelectedChart
 	};
 
-	if (g_GameData.gui.isReplay)
-		Engine.SwitchGuiPage("page_replaymenu.xml", {
-			"replaySelectionData": g_GameData.gui.replaySelectionData,
-			"showNextSummary": nextSummary,
-			"summarySelectedData": summarySelectedData
-		});
+	let pageSettings = {
+		"replaySelectionData": g_GameData.gui.replaySelectionData,
+		"showNextSummary": nextSummary,
+		"summarySelectedData": summarySelectedData
+	};
+
+	if (g_GameData.gui.dialog)
+		Engine.PopGuiPageCB({ "showSummary": nextSummary });
+	else if (g_GameData.gui.isReplay)
+		Engine.SwitchGuiPage("page_replaymenu.xml", pageSettings);
 }
 
 function showCivGui(civ)

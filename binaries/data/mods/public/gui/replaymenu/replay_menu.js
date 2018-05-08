@@ -94,11 +94,22 @@ function init(data)
 	if (data && data.summarySelectedData)
 		g_SummarySelectedData = data.summarySelectedData;
 	
-	if (data && typeof data.showNextSummary !== "undefined")
-	{
-		Engine.GetGUIObjectByName("replaySelection").selected = data.showNextSummary;
-		showReplaySummary();
-	}
+	if (data && !!data.showNextSummary)
+		showSummary(data.showNextSummary);
+}
+
+function callbackSummary(data)
+{
+	if (data && !!data.startReplay)
+		Engine.PopGuiPageCB(data.startReplay);
+	else if (data && !!data.showSummary)
+		showSummary(data.showSummary);
+}
+
+function showSummary(summary)
+{
+	Engine.GetGUIObjectByName("replaySelection").selected = summary;
+	showReplaySummary();
 }
 
 /**

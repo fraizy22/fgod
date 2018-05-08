@@ -50,12 +50,26 @@ function startReplay()
 		displayReplayCompatibilityError(replay);
 }
 
+function reallyStartVisualReplay(replayDirectory)
+{
+	if (g_InGame)
+		messageBox(
+			400, 200,
+			translate("Do you want to end current game and start replay?"),
+			translate("Confirmation"),
+			[translate("No"), translate("Yes")],
+			[null, () => reallyReallyStartVisualReplay(replayDirectory)]
+		);
+	else
+		reallyReallyStartVisualReplay(replayDirectory);
+}
+
 /**
  * Attempts the visual replay, regardless of the compatibility.
  *
  * @param replayDirectory {string}
  */
-function reallyStartVisualReplay(replayDirectory)
+function reallyReallyStartVisualReplay(replayDirectory)
 {
 	if (g_InGame)
 		Engine.EndGame();
@@ -158,7 +172,7 @@ function showReplaySummary()
 			"previous": nextSummary(selected, -1)
 		},
 		"selectedData": g_SummarySelectedData,
-		"callback": Engine.HasXmppClient() && "cbSummaryStartReplay"
+		"callback": Engine.HasXmppClient() && "callbackSummary"
 	};
 
 	if (Engine.HasXmppClient())
@@ -168,12 +182,6 @@ function showReplaySummary()
 	}
 	else
 		Engine.SwitchGuiPage("page_summary.xml", pageSettings);
-}
-
-function cbSummaryStartReplay(data)
-{
-	if (data)
-		Engine.PopGuiPageCB(data);
 }
 
 function reloadCache()
