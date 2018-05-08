@@ -8,6 +8,11 @@ var g_SoundNotifications = {
 };
 
 /**
+ * Locale language used for string comparisons.
+ */
+var g_Localization = Engine.ConfigDB_GetValue("user", "locale").replace("_", "-") || "en-GB";
+
+/**
  * Save setting for current instance and write setting to the user config file.
  */
 function saveSettingAndWriteToUserConfig(setting, value)
@@ -263,4 +268,76 @@ function hideRemaining(parentName, start = 0)
 
 	for (let i = start; i < objects.length; ++i)
 		objects[i].hidden = true;
+}
+
+/**
+ * Initialize GUI list sort.
+ * 
+ * @param {string} guiList - Name of GUI List object
+ * @param {string} config - User config setting name
+ * @returns {array} - column sort array
+ */
+function initGUIListSort(guiList, config)
+{
+	let columnOrder = Engine.ConfigDB_GetValue("user", config).split(",").map(key => {
+		let [name, order] = key.split(":");
+		return { "name": name, "order": +order };
+	});
+
+	let guiObj = Engine.GetGUIObjectByName(guiList);
+
+	guiObj.selected_column_order = columnOrder[0].order;
+	guiObj.selected_column = columnOrder[0].name;
+
+	return columnOrder;
+}
+
+/**
+ * Change order of sorts array and sort order.
+ * 
+ * @param {obj} guiListObj - GUI list object
+ * @param {array} sorts - Sorts array
+ */
+function changeGUIListSort(guiListObj, sorts, config)
+{
+	let columnName = guiListObj.selected_column;
+	let sortsIndex = sorts.findIndex(sort => sort.name == columnName);
+
+	if (sortsIndex > 0)
+		guiListObj.selected_column_order = sorts[sortsIndex].order;
+
+	if (sortsIndex > -1)
+		sorts.splice(sortsIndex, 1);
+
+	sorts.unshift({ "name": columnName, "order": guiListObj.selected_column_order });
+
+	saveSettingAndWriteToUserConfig(config, sorts.map(sort => sort.name + ":" + sort.order).join(","));
+}
+
+/**
+ * Compare two objects a and b by an attribute. Also mind language localization if strings are compared.
+ * 
+ * @param {obj} objA - Object A
+ * @param {obj} objB - Object B
+ * @param {string} attribute - Attribute of object a and b to compare.
+ * @param {obj} attributeTranslation - Attributes translation object
+ * @param {number} order - Sorting order
+ */
+function cmpObjs(objA, objB, attribute, attributeTranslation, order)
+{
+	let cmp = attributeTranslation[attribute] ? obj => attributeTranslation[attribute](obj) : obj[attribute] || 0;
+
+	let cmpA = cmp(objA);
+	let cmpB = cmp(objB);
+
+	if (typeof cmpA == "string" && typeof cmpB == "string")
+		return order * cmpA.localeCompare(cmpB, g_Localization);
+		warn(cmpA + " " + objA.name + "|" + cmpB + " " + objB.name)
+	if (cmpA < cmpB)
+		return -order;
+
+	if (cmpA > cmpB)
+		return +order;
+
+	return 0;
 }

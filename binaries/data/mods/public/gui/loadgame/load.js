@@ -5,6 +5,11 @@ var g_SavedGamesMetadata = [];
  */
 const g_CivData = loadCivData(false, false);
 
+/**
+ * Set gamelist column sort.
+ */
+var g_GamesSort = [];
+
 function init()
 {
 	let savedGames = Engine.GetSavedGames();
@@ -15,7 +20,7 @@ function init()
 	if (Engine.GetGUIObjectByName("compatibilityFilter").checked)
 		savedGames = savedGames.filter(game => isCompatibleSavegame(game.metadata, engineInfo));
 
-	let gameSelection = Engine.GetGUIObjectByName("gameSelection");
+	let gameSelection = Engine.GetGUIObjectByName("gameList");
 	gameSelection.enabled = !!savedGames.length;
 	Engine.GetGUIObjectByName("gameSelectionFeedback").hidden = !!savedGames.length;
 
@@ -27,34 +32,21 @@ function init()
 		return game.metadata;
 	});
 
-	let sortKey = gameSelection.selected_column;
-	let sortOrder = gameSelection.selected_column_order;
+	g_GamesSort = initGUIListSort("gameList", "load.gamessort");
 	g_SavedGamesMetadata = g_SavedGamesMetadata.sort((a, b) => {
-		let cmpA, cmpB;
-		switch (sortKey)
-		{
-		case 'date':
-			cmpA = +a.time;
-			cmpB = +b.time;
-			break;
-		case 'mapName':
-			cmpA = translate(a.initAttributes.settings.Name);
-			cmpB = translate(b.initAttributes.settings.Name);
-			break;
-		case 'mapType':
-			cmpA = translateMapType(a.initAttributes.mapType);
-			cmpB = translateMapType(b.initAttributes.mapType);
-			break;
-		case 'description':
-			cmpA = a.description;
-			cmpB = b.description;
-			break;
-		}
 
-		if (cmpA < cmpB)
-			return -sortOrder;
-		else if (cmpA > cmpB)
-			return +sortOrder;
+		for (let sort of g_GamesSort)
+		{
+			let ret = cmpObjs(a, b, sort.name, {
+				'date': obj => +obj.time,
+				'mapName': obj => translate(obj.initAttributes.settings.Name),
+				'mapType': obj => translateMapType(obj.initAttributes.mapType),
+				'description': obj => obj.description
+			}, sort.order);
+
+			if (ret)
+				return ret;
+		}
 
 		return 0;
 	});
@@ -96,7 +88,7 @@ function init()
 
 function selectionChanged()
 {
-	let metadata = g_SavedGamesMetadata[Engine.GetGUIObjectByName("gameSelection").selected];
+	let metadata = g_SavedGamesMetadata[Engine.GetGUIObjectByName("gameList").selected];
 	Engine.GetGUIObjectByName("invalidGame").hidden = !!metadata;
 	Engine.GetGUIObjectByName("validGame").hidden = !metadata;
 	Engine.GetGUIObjectByName("loadGameButton").enabled = !!metadata;
@@ -128,7 +120,7 @@ function selectionChanged()
 
 function loadGame()
 {
-	let gameSelection = Engine.GetGUIObjectByName("gameSelection");
+	let gameSelection = Engine.GetGUIObjectByName("gameList");
 	let gameId = gameSelection.list_data[gameSelection.selected];
 	let metadata = g_SavedGamesMetadata[gameSelection.selected];
 

@@ -61,7 +61,10 @@
 			>
 
 				<action on="SelectionChange">displayReplayDetails();</action>
-				<action on="SelectionColumnChange">displayReplayList();</action>
+				<action on="SelectionColumnChange">
+					changeGUIListSort(this, g_ColumnOrder, "replay.sort");
+					displayReplayList();
+				</action>
 				<action on="mouseleftdoubleclickitem">startReplay();</action>
 
 				<!-- Columns -->

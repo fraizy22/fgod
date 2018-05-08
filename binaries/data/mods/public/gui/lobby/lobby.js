@@ -112,6 +112,16 @@ var g_GameList = [];
 var g_PlayerList = [];
 
 /**
+ * Set gamelist column sort.
+ */
+var g_GamesSort = [];
+
+/**
+ * Set playerlist column sort.
+ */
+var g_PlayersSort = [];
+
+/**
  * Used to restore the selection after updating the playerlist.
  */
 var g_SelectedPlayer = "";
@@ -423,6 +433,7 @@ function init(attribs = {})
 	global.music.setState(global.music.states.MENU);
 
 	initDialogStyle();
+	g_GamesSort = initGUIListSort("gameList", "lobby.sort.games");
 	initGameFilters();
 	updateConnectedState();
 
@@ -430,6 +441,7 @@ function init(attribs = {})
 
 	// When rejoining the lobby after a game, we don't need to process presence changes
 	Engine.LobbyClearPresenceUpdates();
+	g_PlayersSort = initGUIListSort("playerList", "lobby.sort.players");
 	updatePlayerList();
 	updateSubject(Engine.LobbyGetRoomSubject());
 	updateLobbyColumns();
@@ -526,7 +538,7 @@ function updateLobbyColumns()
 	let gameRating = Engine.ConfigDB_GetValue("user", "lobby.columns.gamerating") == "true";
 
 	// Only show the selected columns
-	let gamesBox = Engine.GetGUIObjectByName("gamesBox");
+	let gamesBox = Engine.GetGUIObjectByName("gameList");
 	gamesBox.hidden_mapType = gameRating;
 	gamesBox.hidden_gameRating = !gameRating;
 
@@ -718,7 +730,7 @@ function updateSubject(newSubject)
  */
 function updateToggleBuddy()
 {
-	let playerList = Engine.GetGUIObjectByName("playersBox");
+	let playerList = Engine.GetGUIObjectByName("playerList");
 	let playerName = playerList.list[playerList.selected];
 
 	let toggleBuddyButton = Engine.GetGUIObjectByName("toggleBuddyButton");
@@ -731,9 +743,7 @@ function updateToggleBuddy()
  */
 function updatePlayerList()
 {
-	let playersBox = Engine.GetGUIObjectByName("playersBox");
-	let sortBy = playersBox.selected_column;
-	let sortOrder = playersBox.selected_column_order;
+	let playersBox = Engine.GetGUIObjectByName("playerList");
 	let highlightedBuddy = Engine.ConfigDB_GetValue("user", "lobby.highlightbuddies") == "true";
 
 	let buddyStatusList = [];
@@ -741,48 +751,31 @@ function updatePlayerList()
 	let presenceList = [];
 	let nickList = [];
 	let ratingList = [];
-
+	// warn(uneval(g_PlayersSort))
 	g_PlayerList = Engine.GetPlayerList().map(player => {
 		player.isBuddy = g_Buddies.indexOf(player.name) != -1;
 		return player;
 	}).sort((a, b) => {
-		let sortA, sortB;
-		let statusOrder = Object.keys(g_PlayerStatuses);
-		let statusA = statusOrder.indexOf(a.presence) + a.name.toLowerCase();
-		let statusB = statusOrder.indexOf(b.presence) + b.name.toLowerCase();
+		let status = obj => Object.keys(g_PlayerStatuses).indexOf(obj.presence); // + obj.name.toLowerCase();
 
-		switch (sortBy)
+		for (let sort of g_PlayersSort)
 		{
-		case 'buddy':
-			sortA = (a.name == g_Username ? 0 : a.isBuddy ? 1 : 2) + statusA;
-			sortB = (b.name == g_Username ? 0 : b.isBuddy ? 1 : 2) + statusB;
-			break;
-		case 'rating':
-			sortA = +a.rating;
-			sortB = +b.rating;
-			break;
-		case 'status':
-			sortA = statusOrder.indexOf(a.presence);
-			sortB = statusOrder.indexOf(b.presence);
+			let ret = cmpObjs(a, b, sort.name, {
+					'buddy': obj => (obj.isBuddy || obj.name == g_Username ? 1 : 2) + status(obj),
+					'rating': obj => +obj.rating,
+					'status': obj => status(obj),
+					'name': obj => obj.name.toLowerCase()
+				}, sort.order);
 
-			// if presences equal, user priored first/last
-			if (sortA == sortB)
-			{
-				if (a.name == g_Username) return -sortOrder;
-				if (b.name == g_Username) return +sortOrder;
-			}
+			if (ret)
+				return ret;
 
-			sortA += b.name.toLowerCase();
-			sortB += a.name.toLowerCase();
-			break;
-		case 'name':
-		default:
-			sortA = a.name.toLowerCase();
-			sortB = b.name.toLowerCase();
-			break;
+			// Keep user player on same sort data priored.
+			if (a.name == g_Username)
+				return -sort.order;
+			if (b.name == g_Username)
+				return +sort.order;
 		}
-		if (sortA < sortB) return -sortOrder;
-		if (sortA > sortB) return +sortOrder;
 		return 0;
 	});
 
@@ -822,7 +815,7 @@ function updatePlayerList()
 */
 function toggleBuddy()
 {
-	let playerList = Engine.GetGUIObjectByName("playersBox");
+	let playerList = Engine.GetGUIObjectByName("playerList");
 	let name = playerList.list[playerList.selected];
 
 	if (!name || name == g_Username || name.indexOf(g_BuddyListDelimiter) != -1)
@@ -851,7 +844,7 @@ function selectGameFromPlayername()
 	if (!g_SelectedPlayer)
 		return;
 
-	let gameList = Engine.GetGUIObjectByName("gamesBox");
+	let gameList = Engine.GetGUIObjectByName("gameList");
 	let foundAsObserver = false;
 	let selected = -1;
 
@@ -880,12 +873,12 @@ function selectGameFromPlayername()
 
 function onPlayerListSelection()
 {
-	let playerList = Engine.GetGUIObjectByName("playersBox");
+	let playerList = Engine.GetGUIObjectByName("playerList");
 	if (playerList.selected == playerList.list.indexOf(g_SelectedPlayer))
 		return;
 
 	g_SelectedPlayer = playerList.list[playerList.selected];
-	lookupSelectedUserProfile("playersBox");
+	lookupSelectedUserProfile("playerList");
 	updateToggleBuddy();
 	selectGameFromPlayername();
 }
@@ -895,7 +888,7 @@ function setLeaderboardVisibility(visible)
 	if (visible)
 		Engine.SendGetBoardList();
 
-	lookupSelectedUserProfile(visible ? "leaderboardBox" : "playersBox");
+	lookupSelectedUserProfile(visible ? "leaderboardBox" : "playerList");
 	Engine.GetGUIObjectByName("leaderboard").hidden = !visible;
 	Engine.GetGUIObjectByName("fade").hidden = !visible;
 }
@@ -984,7 +977,7 @@ function updateProfile()
 	if (!Engine.GetGUIObjectByName("leaderboard").hidden)
 		playerList = Engine.GetGUIObjectByName("leaderboardBox");
 	else
-		playerList = Engine.GetGUIObjectByName("playersBox");
+		playerList = Engine.GetGUIObjectByName("playerList");
 
 	if (attributes.rating == "-2")
 		return;
@@ -1037,10 +1030,9 @@ function updateLeaderboard()
  */
 function updateGameList()
 {
-	let gamesBox = Engine.GetGUIObjectByName("gamesBox");
-	let sortBy = gamesBox.selected_column;
-	let sortOrder = gamesBox.selected_column_order;
+	let gamesBox = Engine.GetGUIObjectByName("gameList");
 	let highlightedBuddy = Engine.ConfigDB_GetValue("user", "lobby.highlightbuddies") == "true";
+	let compTrans = (compTrans, obj, att, defAtt) => compTrans[att] && compTrans[att](obj) || obj[att] || obj[defAtt];
 
 	if (gamesBox.selected > -1)
 	{
@@ -1079,37 +1071,24 @@ function updateGameList()
 		return game;
 	}).filter(game => !filterGame(game)).sort((a, b) => {
 		// keep user games priored first/last
-		if (a.hasUser) return -sortOrder;
-		if (b.hasUser) return +sortOrder;
+		if (a.hasUser) return -sort.order;
+		if (b.hasUser) return +sort.order;
 
-		let sortA, sortB;
-		switch (sortBy)
+		for (let sort of g_GamesSort)
 		{
-		case 'name':
-			sortA = g_GameStatusOrder.indexOf(a.state) + a.name.toLowerCase();
-			sortB = g_GameStatusOrder.indexOf(b.state) + b.name.toLowerCase();
-			break;
-		case 'gameRating':
-		case 'mapSize':
-		case 'mapType':
-			sortA = a[sortBy];
-			sortB = b[sortBy];
-			break;
-		case 'buddy':
-			sortA = String(b.hasBuddies) + g_GameStatusOrder.indexOf(a.state) + a.name.toLowerCase();
-			sortB = String(a.hasBuddies) + g_GameStatusOrder.indexOf(b.state) + b.name.toLowerCase();
-			break;
-		case 'mapName':
-			sortA = translate(a.niceMapName);
-			sortB = translate(b.niceMapName);
-			break;
-		case 'nPlayers':
-			sortA = a.maxnbp;
-			sortB = b.maxnbp;
-			break;
+			if (gamesBox["hidden_" + sort.name])
+				continue;
+
+			let ret = cmpObjs(a, b, sort.name, {
+				'buddy': obj => String(b.hasBuddies) + g_GameStatusOrder.indexOf(obj.state) + obj.name.toLowerCase(),
+				'name': obj => g_GameStatusOrder.indexOf(obj.state) + obj.name.toLowerCase(),
+				'mapName': obj => translate(obj.niceMapName),
+				'nPlayers':	obj => obj.maxnbp
+			}, sort.order);
+
+			if (ret)
+				return ret;
 		}
-		if (sortA < sortB) return -sortOrder;
-		if (sortA > sortB) return +sortOrder;
 		return 0;
 	});
 
@@ -1222,7 +1201,7 @@ function updateGameSelection()
 
 function selectedGame()
 {
-	let gamesBox = Engine.GetGUIObjectByName("gamesBox");
+	let gamesBox = Engine.GetGUIObjectByName("gameList");
 	if (gamesBox.selected < 0)
 		return undefined;
 

@@ -180,43 +180,21 @@ function initRatedGamesFilter(filters)
  */
 function filterReplays()
 {
-	let sortKey = Engine.GetGUIObjectByName("replaySelection").selected_column;
-	let sortOrder = Engine.GetGUIObjectByName("replaySelection").selected_column_order;
-
 	g_ReplaysFiltered = g_Replays.filter(replay => filterReplay(replay)).sort((a, b) => {
-		let cmpA, cmpB;
-		switch (sortKey)
+		for (let sort of g_ColumnOrder)
 		{
-		case 'months':
-			cmpA = +a.attribs.timestamp;
-			cmpB = +b.attribs.timestamp;
-			break;
-		case 'duration':
-			cmpA = +a.duration;
-			cmpB = +b.duration;
-			break;
-		case 'players':
-			cmpA = +a.attribs.settings.PlayerData.length;
-			cmpB = +b.attribs.settings.PlayerData.length;
-			break;
-		case 'mapName':
-			cmpA = getReplayMapName(a);
-			cmpB = getReplayMapName(b);
-			break;
-		case 'mapSize':
-			cmpA = +a.attribs.settings.Size;
-			cmpB = +b.attribs.settings.Size;
-			break;
-		case 'popCapacity':
-			cmpA = +a.attribs.settings.PopulationCap;
-			cmpB = +b.attribs.settings.PopulationCap;
-			break;
-		}
+			let ret = cmpObjs(a, b, sort.name, {
+				'months': obj => obj.attribs.timestamp,
+				'duration': obj => obj.duration,
+				'players': obj => +obj.attribs.settings.PlayerData.length,
+				'mapName':	obj => getReplayMapName(obj),
+				'mapSize': obj => +obj.attribs.settings.Size,
+				'popCapacity': obj => +obj.attribs.settings.PopulationCap
+			}, sort.order);
 
-		if (cmpA < cmpB)
-			return -sortOrder;
-		else if (cmpA > cmpB)
-			return +sortOrder;
+			if (ret)
+				return ret;
+		}
 
 		return 0;
 	});

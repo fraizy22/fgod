@@ -54,6 +54,11 @@ var g_ReplaysLoaded = false;
 var g_SummarySelectedData;
 
 /**
+ * Set list column sort.
+ */
+var g_ColumnOrder = [];
+
+/**
  * Initializes globals, loads replays and displays the list.
  */
 function init(data)
@@ -64,6 +69,7 @@ function init(data)
 		return;
 	}
 
+	g_ColumnOrder = initGUIListSort("replaySelection", "replay.sort");
 	loadReplays(data && data.replaySelectionData, false);
 
 	if (!g_Replays)
