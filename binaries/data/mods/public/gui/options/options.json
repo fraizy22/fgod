@@ -389,6 +389,13 @@
 				"label": "Game Rating Column",
 				"tooltip": "Show the average rating of the participating players in a column of the gamelist.",
 				"config": "lobby.columns.gamerating"
+			},
+			{
+				"type": "number",
+				"label": "Auto Away Minutes",
+				"tooltip": "Number of minutes before you are set to auto away.",
+				"config": "lobby.autoawaytime",
+				"min": "1"
 			}
 		]
 	},
