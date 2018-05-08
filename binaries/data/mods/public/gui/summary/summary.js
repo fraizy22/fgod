@@ -137,6 +137,8 @@ var g_PanelButtons = [];
  */
 var g_SelectedPanel = "";
 
+var g_InGame = false;
+
 function init(data)
 {
 	// Fill globals
@@ -184,6 +186,7 @@ function initGUIWindow()
 	summaryWindow.sprite = g_GameData.gui.dialog ? "ModernDialog" : "ModernWindow";
 	summaryWindow.size = g_GameData.gui.dialog ? "16 24 100%-16 100%-24" : "0 0 100% 100%";
 	Engine.GetGUIObjectByName("summaryWindowTitle").size = g_GameData.gui.dialog ? "50%-128 -16 50%+128 16" : "50%-128 4 50%+128 36";
+	Engine.GetGUIObjectByName("fadeImage").hidden = !g_GameData.gui.dialog;
 }
 
 /**
@@ -466,6 +469,9 @@ function continueButton()
 
 function startReplay()
 {
+	if (g_GameData.gui.ingame)
+		Engine.EndGame();
+
 	if (!Engine.StartVisualReplay(g_GameData.gui.replayDirectory))
 	{
 		warn("Replay file not found!");

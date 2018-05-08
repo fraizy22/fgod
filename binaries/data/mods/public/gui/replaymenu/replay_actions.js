@@ -57,13 +57,16 @@ function startReplay()
  */
 function reallyStartVisualReplay(replayDirectory)
 {
+	if (g_InGame)
+		Engine.EndGame();
+
 	if (!Engine.StartVisualReplay(replayDirectory))
 	{
 		warn('Replay "' + escapeText(Engine.GetReplayDirectoryName(replayDirectory)) + '" not found! Please click on reload cache.');
 		return;
 	}
 
-	Engine.SwitchGuiPage("page_loading.xml", {
+	let pageSettings = [ "page_loading.xml", {
 		"attribs": Engine.GetReplayAttributes(replayDirectory),
 		"playerAssignments": {
 			"local": {
@@ -72,8 +75,14 @@ function reallyStartVisualReplay(replayDirectory)
 			}
 		},
 		"savedGUIData": "",
+		"isReplay": true,
 		"replaySelectionData": createReplaySelectionData(replayDirectory)
-	});
+	} ];
+
+	if (Engine.HasXmppClient())
+		Engine.PopGuiPageCB(pageSettings);
+	else
+		Engine.SwitchGuiPage(...pageSettings);
 }
 
 /**
@@ -117,6 +126,7 @@ function showReplaySummary()
 		messageBox(500, 200, translate("No summary data available."), translate("Error"));
 		return;
 	}
+// <<<<<<< HEAD
 		
 	function nextSummary(index, direction)
 	{
@@ -132,24 +142,52 @@ function showReplaySummary()
 		return nextIdx;
 	}
 
-	Engine.SwitchGuiPage("page_summary.xml", {
+	// Engine.SwitchGuiPage("page_summary.xml", {
+// =======
+	let pageSettings = {
+// >>>>>>> @{-1}
 		"sim": simData,
 		"gui": {
 			"dialog": false,
 			"isReplay": true,
+			"isInLobby": Engine.HasXmppClient(),
+			"ingame": g_InGame,
 			"replayDirectory": g_ReplaysFiltered[selected].directory,
 			"replaySelectionData": createReplaySelectionData(g_ReplaysFiltered[selected].directory),
 			"next": nextSummary(selected, 1),
 			"previous": nextSummary(selected, -1)
 		},
-		"selectedData": g_SummarySelectedData
-	});
+		"selectedData": g_SummarySelectedData,
+		"callback": Engine.HasXmppClient() && "cbSummaryStartReplay"
+	};
+
+	if (Engine.HasXmppClient())
+	{
+		pageSettings.gui.dialog = true;
+		Engine.PushGuiPage("page_summary.xml", pageSettings);
+	}
+	else
+		Engine.SwitchGuiPage("page_summary.xml", pageSettings);
+}
+
+function cbSummaryStartReplay(data)
+{
+	if (data)
+		Engine.PopGuiPageCB(data);
 }
 
 function reloadCache()
 {
 	let selected = Engine.GetGUIObjectByName("replaySelection").selected;
 	loadReplays(selected > -1 ? createReplaySelectionData(g_ReplaysFiltered[selected].directory) : "", true);
+}
+
+function close()
+{
+	if (Engine.HasXmppClient())
+		Engine.PopGuiPage();
+	else
+		Engine.SwitchGuiPage("page_pregame.xml");
 }
 
 /**

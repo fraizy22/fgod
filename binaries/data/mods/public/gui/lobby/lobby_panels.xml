@@ -297,7 +297,15 @@
 				<action on="Press">submitChatInput();</action>
 			</object>
 		</object>
+		<object name="moreButtons" size="0 100%-25 100% 100%" hidden="true" type="image" z="101" >
+			<repeat count="8">
+				<object name="moreButtons[n]" type="button" style="ModernButtonRed" size="0 100%-25 33%-2 100%" hidden="true" />
+			</repeat>
+		</object>
 	</object>
+
+	<object name="moreOptionsBarActionHide" type="image" size="0 0 100% 100%-85" z="100" hidden="true" />
+	<object name="moreOptionsBarActionShow" type="image" size="0 100%-20 100% 100%" z="101" />
 
 	<!-- Translucent black background -->
 	<object hidden="true" name="fade" type="image" z="100" sprite="ModernFade"/>

@@ -187,7 +187,6 @@ var g_GameList = [];
 var g_PlayerList = [];
 
 /**
-<<<<<<< HEAD
  * Set gamelist column sort.
  */
 var g_GamesSort = [];
@@ -198,8 +197,6 @@ var g_GamesSort = [];
 var g_PlayersSort = [];
 
 /**
-=======
->>>>>>> @{-1}
  * Used to restore the selection after updating the playerlist.
  */
 var g_SelectedPlayer = "";
@@ -227,6 +224,8 @@ var g_AskedReconnect = false;
 
 var g_CallbackSet = false;
 
+var g_InGame = false;
+
 /**
  * Manage stacked cancel hotkey. Call first true condition onPress function.
  */
@@ -235,6 +234,19 @@ let g_CancelHotkey = [
 	() => setUserProfileVisibility(false),
 	() => setListBoxesUnselected()
 ];
+
+/**
+ * List of more buttons bar below the chat input.
+ */
+var g_MoreButtonsBarFuncs = {
+	"Replays": () => Engine.PushGuiPage("page_replaymenu.xml", { "ingame": g_InGame, "callback": "startReplay" }),
+	"Last Summary": () => showLastGameSummary(),
+	"Civilizations": () => Engine.PushGuiPage("page_structree.xml"),
+	"Options": () => Engine.PushGuiPage("page_options.xml", {
+		"selectedCategory": "Lobby",
+		"callback": "initUserConfigurables"
+	})
+};
 
 /**
  * Processing of notifications sent by XmppClient.cpp.
@@ -507,6 +519,7 @@ var g_ChatCommands = {
 function init(attribs = {})
 {
 	g_Dialog = !!attribs.dialog;
+	g_InGame = !!attribs.ingame;
 
 	if (!g_Settings)
 	{
@@ -531,7 +544,7 @@ function init(attribs = {})
 	g_PlayersSort = initGUIListSort("playerList", "lobby.sort.players");
 	updatePlayerList();
 	updateSubject(Engine.LobbyGetRoomSubject());
-	updateLobbyColumns();
+	initUserConfigurables();
 
 	updateToggleBuddy();
 	Engine.GetGUIObjectByName("chatInput").tooltip = colorizeAutocompleteHotkey();
@@ -545,6 +558,14 @@ function init(attribs = {})
 
 	if (attribs && attribs.joinGame)
 		Engine.PushGuiPage("page_gamesetup_mp.xml", attribs.joinGame);
+	else if (attribs && attribs.startReplay)
+		startReplay(attribs.startReplay);
+}
+
+function startReplay(data)
+{
+	if (data)
+		Engine.SwitchGuiPage(...data);
 }
 
 function reconnectMessageBox()
@@ -631,6 +652,48 @@ function initAutoAway()
 	presenceDropdown.list_data = g_AutoAwayStates.map(state => state.name);
 	presenceDropdown.selected = (presenceDropdown.list_data.findIndex(data => data == Engine.ConfigDB_GetValue("user", "lobby.presenceselection"))
 		+ 1 || 1) - 1;
+}
+
+function initUserConfigurables()
+{
+	updateLobbyColumns();
+	initGUIMoreButtonsBar();
+}
+
+function initGUIMoreButtonsBar()
+{
+	let showConfig = Engine.ConfigDB_GetValue("user", "gui.lobby.morebuttonsbar");
+
+	Engine.GetGUIObjectByName("moreOptionsBarActionHide").onmouseenter =
+		showConfig == "hiding" ? () => setMoreButtonsBarVisibility(false) : () => true;
+	Engine.GetGUIObjectByName("moreOptionsBarActionShow").onmouseenter =
+		showConfig == "hiding" ? () => setMoreButtonsBarVisibility(true) : () => true;
+
+	setMoreButtonsBarVisibility(showConfig == "visible");
+
+	if (showConfig == "disabled")
+		return;
+
+	let buttonWidthPercentton = (1 / Object.keys(g_MoreButtonsBarFuncs).length) * 100;
+
+	let j = -1;
+	for (let i in g_MoreButtonsBarFuncs)
+	{
+		let button = Engine.GetGUIObjectByName("moreButtons[" + ++j + "]");
+		button.hidden = false;
+		// Let gap "+2" between buttons and calculate size to fit space
+		button.size = j * buttonWidthPercentton + "%" + (j > 0 ? "+2" : "") + " 100%-25 " +
+			((j + 1) * buttonWidthPercentton) + "%" + " 100%";
+		button.caption = i;
+		button.onpress = g_MoreButtonsBarFuncs[i];
+	}
+}
+
+function setMoreButtonsBarVisibility(show)
+{
+	Engine.GetGUIObjectByName("moreOptionsBarActionHide").hidden = !show;
+	Engine.GetGUIObjectByName("chatPanel").size = show ? "0 49% 100% 100%-29" : "0 49% 100% 100%"
+	Engine.GetGUIObjectByName("moreButtons").hidden = !show;
 }
 
 function updateLobbyColumns()
@@ -1929,14 +1992,11 @@ function showLastGameSummary()
 
 	Engine.PushGuiPage("page_summary.xml", {
 		"sim": simData,
-		"gui": { "replayDirectory": replays[0].directory, "isInLobby": true, "dialog": true },
+		"gui": {
+			"replayDirectory": replays[0].directory,
+			"isInLobby": true,
+			"ingame": g_InGame,
+			"dialog": true },
 		"callback": "startReplay"
 	});
 }
-
-function startReplay(data)
-{
-	if (data)
-		Engine.SwitchGuiPage(...data);
-}
-

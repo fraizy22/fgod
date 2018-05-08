@@ -155,7 +155,7 @@ function lobbyDialogButton()
 	closeOpenDialogs();
 	setLobbyButtonIcon(false);
 	g_LobbyDialogOpened = true;
-	Engine.PushGuiPage("page_lobby.xml", { "dialog": true, "callback": "setLobbyDialogClosed" });
+	Engine.PushGuiPage("page_lobby.xml", { "ingame": true, "dialog": true, "callback": "setLobbyDialogClosed" });
 }
 
 function chatMenuButton()

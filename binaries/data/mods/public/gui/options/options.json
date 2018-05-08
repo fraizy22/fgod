@@ -408,6 +408,17 @@
 				"tooltip": "Number of minutes before you are set to auto away.",
 				"config": "lobby.autoawaytime",
 				"min": "1"
+			},
+			{
+				"type": "dropdown",
+				"label": "Show More Buttons Bar",
+				"tooltip": "Show more buttons bar below chat input not, hidden or always.",
+				"config": "gui.lobby.morebuttonsbar",
+				"list": [
+					{ "value": "disabled", "label": "Disabled" },
+					{ "value": "hiding", "label": "Hiding" },
+					{ "value": "visible", "label": "Visible" }
+				]
 			}
 		]
 	},

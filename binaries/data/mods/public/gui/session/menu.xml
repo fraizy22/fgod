@@ -61,7 +61,7 @@
 			tooltip_style="sessionToolTip"
 			hotkey="lobby"
 		>
-			<translatableAttribute id="caption">Lobby</translatableAttribute>
+			<translatableAttribute id="caption">Lobby Dialog</translatableAttribute>
 			<translatableAttribute id="tooltip">Show the multiplayer lobby in a dialog window.</translatableAttribute>
 			<action on="Press">lobbyDialogButton();</action>
 		</object>

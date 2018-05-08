@@ -58,6 +58,8 @@ var g_SummarySelectedData;
  */
 var g_ColumnOrder = [];
 
+var g_InGame = false;
+
 /**
  * Initializes globals, loads replays and displays the list.
  */
@@ -69,14 +71,22 @@ function init(data)
 		return;
 	}
 
+	g_InGame = data && !!data.ingame;
+
+// <<<<<<< HEAD
 	g_ColumnOrder = initGUIListSort("replaySelection", "replay.sort");
-	loadReplays(data && data.replaySelectionData, false);
+	loadReplays(data && data.replaySelectionData || null, false);
+// =======
+// 	loadReplays(data && data.replaySelectionData || null, false);
+// >>>>>>> @{-1}
 
 	if (!g_Replays)
 	{
 		Engine.SwitchGuiPage("page_pregame.xml");
 		return;
 	}
+
+	initGUIWindow();
 
 	initHotkeyTooltips();
 	displayReplayList();
@@ -89,6 +99,20 @@ function init(data)
 		Engine.GetGUIObjectByName("replaySelection").selected = data.showNextSummary;
 		showReplaySummary();
 	}
+}
+
+/**
+ * Set sprite of the window and size of the window and the window title and close button caption.
+ */
+function initGUIWindow()
+{
+	let dialog = Engine.HasXmppClient();
+	let window = Engine.GetGUIObjectByName("replayWindow");
+	window.sprite = dialog ? "ModernDialog" : "ModernWindow";
+	window.size = dialog ? "16 24 100%-16 100%-24" : "0 0 100% 100%";
+	Engine.GetGUIObjectByName("replayWindowTitle").size = dialog ? "50%-128 -16 50%+128 16" : "50%-128 4 50%+128 36";
+	Engine.GetGUIObjectByName("closeButton").caption = dialog ? translate("Lobby") : translate("Main Menu");
+	Engine.GetGUIObjectByName("fadeImage").hidden = !dialog;
 }
 
 /**

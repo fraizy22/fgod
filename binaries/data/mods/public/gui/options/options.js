@@ -175,6 +175,10 @@ function init(data, hotloadData)
 	g_TabCategorySelected = hotloadData ? hotloadData.tabCategorySelected : 0;
 
 	g_Options = Engine.ReadJSONFile("gui/options/options.json");
+
+	if (data && data.selectedCategory)
+		g_Options.find((opt, index) => opt.label == data.selectedCategory && (g_TabCategorySelected = index))
+
 	translateObjectKeys(g_Options, ["label", "tooltip"]);
 	deepfreeze(g_Options);
 
