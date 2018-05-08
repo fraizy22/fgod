@@ -387,7 +387,7 @@ function closePage()
 function closePageWithoutConfirmation()
 {
 	if (g_HasCallback)
-		Engine.PopGuiPageCB(g_CloseCallbacks);
+		Engine.PopGuiPageCB({ "callbacks": g_CloseCallbacks, "page": g_Options[g_TabCategorySelected].label});
 	else
 		Engine.PopGuiPage();
 }

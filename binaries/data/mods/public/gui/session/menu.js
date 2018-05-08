@@ -79,6 +79,9 @@ var g_SummarySelectedData;
 // Redefined every time someone makes a tribute (so we can save some data in a closure). Called in input.js handleInputBeforeGui.
 var g_FlushTributing = function() {};
 
+// Remember last options page
+var g_OptionsPage;
+
 function initMenu()
 {
 	Engine.GetGUIObjectByName("menu").size = "100%-164 " + MENU_TOP + " 100% " + MENU_BOTTOM;
@@ -272,15 +275,19 @@ function openOptions()
 	pauseGame();
 
 	Engine.PushGuiPage("page_options.xml", {
+		"selectedCategory": g_OptionsPage,
 		"callback": "optionsPageClosed"
 	});
 }
 
 function optionsPageClosed(data)
 {
-	for (let callback of data)
-		if (global[callback])
-			global[callback]();
+	g_OptionsPage = data && data.page;
+
+	if (data && data.callbacks)
+		for (let callback of data.callbacks)
+			if (global[callback])
+				global[callback]();
 
 	resumeGame();
 }
