@@ -1585,7 +1585,7 @@ function joinButton()
 		messageBox(
 			400, 200,
 			translate("Your active mods do not match the mods of this game.") + "\n\n" +
-				comparedModsString(JSON.parse(game.mods), Engine.GetEngineInfo().mods) + "\n\n" +
+				comparedModsString(JSON.parse(game.mods), Engine.GetEngineInfo().mods.filter(mod => mod[0] != "fgod")) + "\n\n" +
 				translate("Do you want to switch to the mod selection page?"),
 			translate("Incompatible mods"),
 			[translate("No"), translate("Yes")],
