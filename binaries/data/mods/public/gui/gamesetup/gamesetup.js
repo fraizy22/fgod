@@ -568,14 +568,8 @@ var g_Dropdowns = {
 		"get": () => g_GameAttributes.settings.PlayerData.length,
 		"enabled": () => g_GameAttributes.mapType == "random",
 		"select": (itemIdx) => {
-			let num = itemIdx + 1;
-			let pData = g_GameAttributes.settings.PlayerData;
-			g_GameAttributes.settings.PlayerData =
-				num > pData.length ?
-					pData.concat(clone(g_DefaultPlayerData.slice(pData.length, num))) :
-					pData.slice(0, num);
-			unassignInvalidPlayers(num);
-			sanitizePlayerData(g_GameAttributes.settings.PlayerData);
+			Engine.GetGUIObjectByName("teamButton").selected = 0;
+			setPlayerNumbers(itemIdx);
 		},
 		"initOrder": 1000
 	},
@@ -718,6 +712,18 @@ var g_Dropdowns = {
 		"initOrder": 1000
 	},
 };
+
+function setPlayerNumbers(itemIdx)
+{
+	let num = itemIdx + 1;
+	let pData = g_GameAttributes.settings.PlayerData;
+	g_GameAttributes.settings.PlayerData =
+		num > pData.length ?
+			pData.concat(clone(g_DefaultPlayerData.slice(pData.length, num))) :
+			pData.slice(0, num);
+	unassignInvalidPlayers(num);
+	sanitizePlayerData(g_GameAttributes.settings.PlayerData);
+}
 
 /**
  * These dropdowns provide a setting that is repeated once for each player
@@ -1193,35 +1199,35 @@ function initDefaults()
 		switch(this.list_data[this.selected])
 		{
 		case "1v1":
-			g_Dropdowns["numPlayers"].select(1);
+			setPlayerNumbers(1);
 			setTeams([0,1]);
 			break;
 		case "2v2":
-			g_Dropdowns["numPlayers"].select(3);
+			setPlayerNumbers(3);
 			setTeams([0,0,1,1]);
 			break;
 		case "3v3":
-			g_Dropdowns["numPlayers"].select(5);
+			setPlayerNumbers(5);
 			setTeams([0,0,0,1,1,1]);
 			break;
 		case "4v4":
-			g_Dropdowns["numPlayers"].select(7);
+			setPlayerNumbers(7);
 			setTeams([0,0,0,0,1,1,1,1]);
 			break;
 		case "1v1v1":
-			g_Dropdowns["numPlayers"].select(2);
+			setPlayerNumbers(2);
 			setTeams([0,1,2]);
 			break;
 		case "2v2v2":
-			g_Dropdowns["numPlayers"].select(5);
+			setPlayerNumbers(5);
 			setTeams([0,0,1,1,2,2]);
 			break;
 		case "1v1v1v1":
-			g_Dropdowns["numPlayers"].select(3);
+			setPlayerNumbers(3);
 			setTeams([0,1,2,3]);
 			break;
 		case "2v2v2v2":
-			g_Dropdowns["numPlayers"].select(7);
+			setPlayerNumbers(7);
 			setTeams([0,0,1,1,2,2,3,3]);
 			break;
 		case "FFA":
