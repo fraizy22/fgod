@@ -138,6 +138,13 @@ function calculateMilitaryScore(playerState, index)
 		playerState.sequences.buildingsCapturedValue[index]) / 10);
 }
 
+function calculateFightActivityRatio(playerState, index)
+{
+	return calculatePercent(
+		calculateMilitaryScore(playerState, index),
+		calculateEconomyScore(playerState, index));
+}
+
 function calculateExplorationScore(playerState, index)
 {
 	return playerState.sequences.percentMapExplored[index] * 10;
@@ -154,6 +161,9 @@ function calculateScoreTeam(team, index, type, counters, headings)
 {
 	if (type == "explorationScore")
 		return g_TeamHelperData[team].mapExploration[index] * 10;
+
+	if (type == "fightActivity")
+		return 0; //calculatePercent(g_TeamHelperData[team].femaleCitizen[index], g_TeamHelperData[team].worker[index]);
 	if (type == "totalScore")
 		return ["economyScore", "militaryScore", "explorationScore"].map(
 			t => calculateScoreTeam(team, index, t, counters, headings)).reduce(
