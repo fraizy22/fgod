@@ -71,14 +71,8 @@ function reallyStartVisualReplay(replayDirectory)
  */
 function reallyReallyStartVisualReplay(replayDirectory)
 {
-	if (g_InGame)
-		Engine.EndGame();
-
-	if (!Engine.StartVisualReplay(replayDirectory))
-	{
-		warn('Replay "' + escapeText(Engine.GetReplayDirectoryName(replayDirectory)) + '" not found! Please click on reload cache.');
-		return;
-	}
+	// if (g_InGame)
+	// 	Engine.EndGame();
 
 	let pageSettings = [ "page_loading.xml", {
 		"attribs": Engine.GetReplayAttributes(replayDirectory),
@@ -93,10 +87,19 @@ function reallyReallyStartVisualReplay(replayDirectory)
 		"replaySelectionData": createReplaySelectionData(replayDirectory)
 	} ];
 
-	if (Engine.HasXmppClient())
-		Engine.PopGuiPageCB(pageSettings);
+	if (g_Dialog)
+	{
+		Engine.PopGuiPageCB({ "page": pageSettings, "replayDirectory": replayDirectory });
+	}
 	else
+	{
+		if (!Engine.StartVisualReplay(replayDirectory))
+		{
+			warn('Replay "' + escapeText(Engine.GetReplayDirectoryName(replayDirectory)) + '" not found! Please click on reload cache.');
+			return;
+		}
 		Engine.SwitchGuiPage(...pageSettings);
+	}
 }
 
 /**
@@ -172,10 +175,10 @@ function showReplaySummary()
 			"previous": nextSummary(selected, -1)
 		},
 		"selectedData": g_SummarySelectedData,
-		"callback": Engine.HasXmppClient() && "callbackSummary"
+		"callback": g_Dialog && "callbackSummary"
 	};
 
-	if (Engine.HasXmppClient())
+	if (g_Dialog)
 	{
 		pageSettings.gui.dialog = true;
 		Engine.PushGuiPage("page_summary.xml", pageSettings);
@@ -192,7 +195,7 @@ function reloadCache()
 
 function close()
 {
-	if (Engine.HasXmppClient())
+	if (g_Dialog)
 		Engine.PopGuiPage();
 	else
 		Engine.SwitchGuiPage("page_pregame.xml");

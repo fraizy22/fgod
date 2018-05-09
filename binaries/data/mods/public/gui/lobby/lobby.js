@@ -241,7 +241,7 @@ var g_OptionsPage = "Lobby";
  * List of more buttons bar below the chat input.
  */
 var g_MoreButtonsBarFuncs = {
-	"Replays": () => Engine.PushGuiPage("page_replaymenu.xml", { "ingame": g_InGame, "callback": "startReplay" }),
+	"Replays": () => Engine.PushGuiPage("page_replaymenu.xml", { "ingame": g_InGame, "dialog": true, "callback": "startReplay" }),
 	"Last Summary": () => showLastGameSummary(),
 	"Civilizations": () => Engine.PushGuiPage("page_structree.xml"),
 	"Options": () => Engine.PushGuiPage("page_options.xml", {
@@ -575,8 +575,17 @@ function init(attribs = {})
 
 function startReplay(data)
 {
-	if (data)
-		Engine.SwitchGuiPage(...data);
+	if (data && g_Dialog)
+		Engine.PopGuiPageCB({ "goGUI": [ "page_lobby.xml", { "startReplay": data } ] });
+	else if (data && !!data.replayDirectory && data.page)
+	{
+		if (!Engine.StartVisualReplay(data.replayDirectory))
+		{
+			warn('Replay "' + escapeText(Engine.GetReplayDirectoryName(replayDirectory)) + '" not found! Please click on reload cache.');
+			return;
+		}
+		Engine.SwitchGuiPage(...data.page);
+	}
 }
 
 function reconnectMessageBox()
@@ -1606,7 +1615,7 @@ function joinSelectedGame()
 	if (g_InGame)
 		messageBox(
 			400, 200,
-			translate("Do you want to end the current game and join selected game?"),
+			translate("Do you want to quit the current game and join selected game?"),
 			translate("Confirmation"),
 			[translate("No"), translate("Yes")],
 			[null, joinSelectedGameReally]
@@ -1670,11 +1679,15 @@ function joinSelectedGameReally()
 		"hostJID": game.hostUsername + "@" + g_LobbyServer + "/0ad"
 	};
 
-	if (g_InGame)
-	{
-		Engine.EndGame();
-		Engine.SwitchGuiPage("page_lobby.xml", { "joinGame": settings });
-	}
+	// if (g_InGame)
+	// {
+	// 	Engine.EndGame();
+	// 	Engine.SwitchGuiPage("page_lobby.xml", { "joinGame": settings });
+	// }
+	// else
+	if (g_Dialog)
+		// Engine.SwitchGuiPage("page_lobby.xml", { "joinGame": settings });
+		Engine.PopGuiPageCB({ "goGUI": [ "page_lobby.xml", { "joinGame": settings } ] });
 	else
 		Engine.PushGuiPage("page_gamesetup_mp.xml", settings);
 }

@@ -158,7 +158,18 @@ function lobbyDialogButton()
 	closeOpenDialogs();
 	setLobbyButtonIcon(false);
 	g_LobbyDialogOpened = true;
-	Engine.PushGuiPage("page_lobby.xml", { "ingame": true, "dialog": true, "callback": "setLobbyDialogClosed" });
+	Engine.PushGuiPage("page_lobby.xml", { "ingame": true, "dialog": true, "callback": "lobbyDialogClosed" });
+}
+
+function lobbyDialogClosed(data)
+{
+	setLobbyDialogClosed();
+
+	if (data && !!data.goGUI)
+	{
+		g_PageOnLeaveSettings = data.goGUI; //["page_lobby.xml", data.goLobby];
+		exitMenuButton();
+	}
 }
 
 function chatMenuButton()
@@ -232,7 +243,7 @@ function resignQuestion()
 		translate("Confirmation"),
 		[translate("I will return"), translate("I resign")],
 		[leaveGame, resignGame],
-		[true, false]
+		[true , false]
 	);
 }
 
@@ -1229,6 +1240,7 @@ function pauseGame(pause = true, explicit = false)
 function resumeGame(explicit = false)
 {
 	pauseGame(false, explicit);
+	g_PageOnLeaveSettings = [];
 }
 
 function resumeGameAndSaveSummarySelectedData(data)

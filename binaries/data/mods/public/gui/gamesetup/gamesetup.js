@@ -1040,7 +1040,7 @@ var g_MiscControls = {
 
 			setLobbyButtonIcon(false);
 			g_LobbyDialogOpened = true;
-			Engine.PushGuiPage("page_lobby.xml", { "dialog": true, "callback": "setLobbyDialogClosed" });
+			Engine.PushGuiPage("page_lobby.xml", { "dialog": true, "callback": "lobbyDialogClosed" });
 		},
 		"hidden": () => !Engine.HasXmppClient()
 	},
@@ -1156,6 +1156,16 @@ function setLobbyButtonIcon(notify)
 
 	if (notify)
 		Engine.GetGUIObjectByName("onscreenToolTip").caption = translate("You have new lobby notifications. (Click the lobby icon button.)");
+}
+
+function lobbyDialogClosed(data)
+{
+	setLobbyDialogClosed();
+
+	if (data && !!data.goGUI)
+	{
+		cancelSetup(data.goGUI[1]);
+	}
 }
 
 function initDefaults()
@@ -1969,7 +1979,7 @@ function sanitizePlayerData(playerData)
 	ensureUniquePlayerColors(playerData);
 }
 
-function cancelSetup()
+function cancelSetup(data)
 {
 	if (g_IsController)
 		savePersistMatchSettings();
@@ -1983,7 +1993,11 @@ function cancelSetup()
 		if (g_IsController)
 			Engine.SendUnregisterGame();
 
-		Engine.SwitchGuiPage("page_lobby.xml", { "dialog": false });
+		if (!(typeof data === "Object" || typeof data === "object"))
+			data = {};
+		data = Object.assign({ "dialog": false }, data);
+
+		Engine.SwitchGuiPage("page_lobby.xml", data);
 	}
 	else
 		Engine.SwitchGuiPage("page_pregame.xml");

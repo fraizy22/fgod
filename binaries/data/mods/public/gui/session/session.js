@@ -91,6 +91,11 @@ var g_Paused = false;
 var g_PausingClients = [];
 
 /**
+ * Array with GUI page to switch to and parameters.
+ */
+var g_PageOnLeaveSettings = [];
+
+/**
  * The playerID selected in the change perspective tool.
  */
 var g_ViewedPlayer = Engine.GetPlayerID();
@@ -780,17 +785,7 @@ function leaveGame(willRejoin)
 	let simData = getReplayMetadata();
 	let playerID = Engine.GetPlayerID();
 
-	Engine.EndGame();
-
-	// After the replay file was closed in EndGame
-	// Done here to keep EndGame small
-	if (!g_IsReplay)
-		Engine.AddReplayToCache(replayDirectory);
-
-	if (g_IsController && Engine.HasXmppClient())
-		Engine.SendUnregisterGame();
-
-	Engine.SwitchGuiPage("page_summary.xml", {
+	let summaryPageSettings = [ "page_summary.xml", {
 		"sim": simData,
 		"gui": {
 			"dialog": false,
@@ -801,7 +796,20 @@ function leaveGame(willRejoin)
 			"replayDirectory": !g_HasRejoined && replayDirectory,
 			"replaySelectionData": g_ReplaySelectionData
 		}
-	});
+	} ];
+
+	Engine.EndGame();
+
+	// After the replay file was closed in EndGame
+	// Done here to keep EndGame small
+	if (!g_IsReplay)
+		Engine.AddReplayToCache(replayDirectory);
+
+	if (g_IsController && Engine.HasXmppClient())
+		Engine.SendUnregisterGame();
+
+	g_PageOnLeaveSettings = g_PageOnLeaveSettings.length ? g_PageOnLeaveSettings : summaryPageSettings;
+	Engine.SwitchGuiPage(...g_PageOnLeaveSettings);
 }
 
 // Return some data that we'll use when hotloading this file after changes
@@ -1577,27 +1585,19 @@ function toggleReplace()
 
 function toggleReplaceReally(playerName)
 {
-	Engine.EndGame();
-
-	// Engine.SwitchGuiPage("page_pregame.xml");
-	Engine.SwitchGuiPage("page_lobby.xml", {
-		"joinGame": {
-			"multiplayerGameType": "join",
-			"name": playerName,
-			"ip": g_ServerIP,
-			"port": g_ServerPort,
-			"useSTUN": g_UseSTUN,
-			"hostJID": g_HostJID}
-		});
-
-	// Engine.PushGuiPage("page_gamesetup_mp.xml", {
-	// 	"multiplayerGameType": "join",
-	// 	"name": player.name,
-	// 	"ip": g_ServerIP,
-	// 	"port": g_ServerPort,
-	// 	"replace": true,
-	// 	"useSTUN": g_UseSTUN,
-	// 	"hostJID": g_HostJID});
+	if (playerName)
+	{
+		g_PageOnLeaveSettings = [ "page_lobby.xml", {
+			"joinGame": {
+				"multiplayerGameType": "join",
+				"name": playerName,
+				"ip": g_ServerIP,
+				"port": g_ServerPort,
+				"useSTUN": g_UseSTUN,
+				"hostJID": g_HostJID}
+			} ];
+		exitMenuButton();
+	}
 }
 
 function showTimeWarpMessageBox()

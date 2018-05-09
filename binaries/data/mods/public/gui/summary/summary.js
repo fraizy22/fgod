@@ -474,7 +474,7 @@ function startReplay()
 	if (g_GameData.gui.ingame)
 		messageBox(
 			400, 200,
-			translate("Do you want to end current game and start replay?"),
+			translate("Do you want to quit current game and start replay?"),
 			translate("Confirmation"),
 			[translate("No"), translate("Yes")],
 			[null, () => reallyStartReplay()]
@@ -485,14 +485,8 @@ function startReplay()
 
 function reallyStartReplay()
 {
-	if (g_GameData.gui.ingame)
-		Engine.EndGame();
-
-	if (!Engine.StartVisualReplay(g_GameData.gui.replayDirectory))
-	{
-		warn("Replay file not found!");
-		return;
-	}
+	// if (g_GameData.gui.ingame)
+	// 	Engine.EndGame();
 
 	let pageSettings = [ "page_loading.xml", {
 		"attribs": Engine.GetReplayAttributes(g_GameData.gui.replayDirectory),
@@ -508,9 +502,16 @@ function reallyStartReplay()
 	} ];
 
 	if (g_GameData.gui.isInLobby)
-		Engine.PopGuiPageCB({ "startReplay": pageSettings });
+		Engine.PopGuiPageCB({ "startReplay": g_GameData.gui.replayDirectory });
 	else
+	{
+		if (!Engine.StartVisualReplay(g_GameData.gui.replayDirectory))
+		{
+			warn("Replay file not found!");
+			return;
+		}
 		Engine.SwitchGuiPage(...pageSettings);
+	}
 }
 
 function initGUILabels()
