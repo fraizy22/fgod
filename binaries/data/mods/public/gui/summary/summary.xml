@@ -212,6 +212,7 @@
 		<object name="onscreenToolTip"
 			type="text"
 			size="20 100%-48 100%-310 100%-20"
+			style="OnScreenToolTipStyle"
 		/>
 
 		<!-- View Lobby Button -->
