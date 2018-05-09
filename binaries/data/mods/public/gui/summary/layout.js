@@ -6,6 +6,7 @@ var getScorePanelsData = () => ({
 			{ "identifier": "totalScore", "caption": translate("Total score"), "yStart": 16, "width": 100 },
 			{ "identifier": "economyScore", "caption": translate("Economy score"), "yStart": 16, "width": 100 },
 			{ "identifier": "militaryScore", "caption": translate("Military score"), "yStart": 16, "width": 100 },
+			{ "identifier": "fightActivity", "caption": translate("Fight Activity Ratio"), "yStart": 16, "width": 100 },
 			{ "identifier": "explorationScore", "caption": translate("Exploration score"), "yStart": 16, "width": 100 }
 		],
 		"titleHeadings": [],
@@ -13,6 +14,7 @@ var getScorePanelsData = () => ({
 			{ "width": 100, "fn": calculateScoreTotal, "verticalOffset": 12 },
 			{ "width": 100, "fn": calculateEconomyScore, "verticalOffset": 12 },
 			{ "width": 100, "fn": calculateMilitaryScore, "verticalOffset": 12 },
+			{ "width": 100, "fn": calculateFightActivityRatio, "verticalOffset": 12 },
 			{ "width": 100, "fn": calculateExplorationScore, "verticalOffset": 12 }
 		],
 		"teamCounterFn": calculateScoreTeam
