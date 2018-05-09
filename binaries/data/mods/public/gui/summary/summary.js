@@ -164,7 +164,7 @@ function init(data)
 	initGUIButtons();
 
 	selectPanel(Engine.GetGUIObjectByName(g_SelectedPanel));
-	for (let button of g_PanelButtons)
+	for (let button of g_PanelButtons.concat(["summaryWindow"]))
 	{
 		let tab = Engine.GetGUIObjectByName(button);
 		tab.onMouseWheelUp = () => selectNextTab(1);

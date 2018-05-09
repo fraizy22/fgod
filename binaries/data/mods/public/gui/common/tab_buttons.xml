@@ -16,5 +16,7 @@
 				<action on="MouseWheelDown">selectNextTab(1);</action>
 			</object>
 		</repeat>
+		<action on="MouseWheelUp">selectNextTab(-1);</action>
+		<action on="MouseWheelDown">selectNextTab(1);</action>
 	</object>
 </object>
