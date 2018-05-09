@@ -1,2 +1,2 @@
 # fgod
-fgod mod source
+fgod mod source over 0 A. D. version A23
