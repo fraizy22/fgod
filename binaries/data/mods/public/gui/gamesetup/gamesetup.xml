@@ -93,19 +93,8 @@
 						<action on="Press">resetCivilizations();</action>
 					</object>
 
-					<object name="playerTeamHeading" type="text" style="ModernLabelText" size="85%+5 0 100%-21 100%">
-						<translatableAttribute id="caption">Team</translatableAttribute>
-					</object>
-
-					<object name="teamResetButton"
-						type="button"
-						style="IconButton"
-						sprite="iconResetGold"
-						sprite_over="iconResetWhite"
-						size="100%-21 0 100%-5 16"
-					>
-						<translatableAttribute id="tooltip">Reset all teams to the default.</translatableAttribute>
-						<action on="Press">resetTeams();</action>
+					<object name="teamButton" type="dropdown" style="ModernDropDown" size="85%+5 2 100%-5 30" tooltip_style="onscreenToolTip">
+						<translatableAttribute id="tooltip">Select teamsize.</translatableAttribute>
 					</object>
 				</object>
 

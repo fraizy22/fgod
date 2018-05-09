@@ -1029,9 +1029,6 @@ var g_MiscControls = {
 	"civResetButton": {
 		"hidden": () => g_GameAttributes.mapType == "scenario" || !g_IsController,
 	},
-	"teamResetButton": {
-		"hidden": () => g_GameAttributes.mapType == "scenario" || !g_IsController,
-	},
 	"lobbyButton": {
 		"onPress": () => function() {
 			if (Engine.HasXmppClient())
@@ -1153,6 +1150,59 @@ function initDefaults()
 	}
 
 	deepfreeze(g_DefaultPlayerData);
+
+	let teamsList = [ "Teams", "FFA", "1v1", "2v2", "3v3", "4v4", "1v1v1", "2v2v2", "1v1v1v1", "2v2v2v2" ];
+
+	Engine.GetGUIObjectByName("teamButton").list = teamsList;
+	Engine.GetGUIObjectByName("teamButton").list_data = teamsList;
+	Engine.GetGUIObjectByName("teamButton").selected = 0;
+	Engine.GetGUIObjectByName("teamButton").onSelectionChange = function() {
+		switch(this.list_data[this.selected])
+		{
+		case "1v1":
+			g_Dropdowns["numPlayers"].select(1);
+			setTeams([0,1]);
+			break;
+		case "2v2":
+			g_Dropdowns["numPlayers"].select(3);
+			setTeams([0,0,1,1]);
+			break;
+		case "3v3":
+			g_Dropdowns["numPlayers"].select(5);
+			setTeams([0,0,0,1,1,1]);
+			break;
+		case "4v4":
+			g_Dropdowns["numPlayers"].select(7);
+			setTeams([0,0,0,0,1,1,1,1]);
+			break;
+		case "1v1v1":
+			g_Dropdowns["numPlayers"].select(2);
+			setTeams([0,1,2]);
+			break;
+		case "2v2v2":
+			g_Dropdowns["numPlayers"].select(5);
+			setTeams([0,0,1,1,2,2]);
+			break;
+		case "1v1v1v1":
+			g_Dropdowns["numPlayers"].select(3);
+			setTeams([0,1,2,3]);
+			break;
+		case "2v2v2v2":
+			g_Dropdowns["numPlayers"].select(7);
+			setTeams([0,0,1,1,2,2,3,3]);
+			break;
+		case "FFA":
+			for (let i in g_GameAttributes.settings.PlayerData)
+				g_GameAttributes.settings.PlayerData[i].Team = -1;
+		}
+		updateGameAttributes();
+	};
+}
+
+function setTeams(teams)
+{
+	for (let i in g_GameAttributes.settings.PlayerData)
+		g_GameAttributes.settings.PlayerData[i].Team = teams[i];
 }
 
 /**
