@@ -2032,9 +2032,16 @@ function showLastGameSummary()
 			b.attribs.timestamp - a.attribs.timestamp
 		);
 
-	let simData = replays && Engine.GetReplayMetadata(replays[0].directory);
+	let simData = {};
+	if (replays)
+		for (let i in replays)
+		{
+			simData = Engine.GetReplayMetadata(replays[i].directory);
+			if (simData)
+				break;
+		}
 
-	if (!simData)
+	if (!replays || !simData)
 	{
 		messageBox(500, 200, translate("No summary data available."), translate("Error"));
 		return;

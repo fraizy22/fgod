@@ -1040,7 +1040,7 @@ var g_MiscControls = {
 
 			setLobbyButtonIcon(false);
 			g_LobbyDialogOpened = true;
-			Engine.PushGuiPage("page_lobby.xml", { "dialog": true, "callback": "lobbyDialogClosed" });
+			Engine.PushGuiPage("page_lobby.xml", { "dialog": true, "ingame": true, "callback": "lobbyDialogClosed" });
 		},
 		"hidden": () => !Engine.HasXmppClient()
 	},
